@@ -19,7 +19,7 @@ to the _International Conference on Interactive Theorem Proving_ [(ITP 2023)](ht
 The code in this GitHub repository is distributed under the
 [`CeCILL v2.1` open source software license](Licence_CeCILL_V2.1-en.txt).
 
-This artifact consists in:
+This artifact consists, in the sub-directory [`theories`](theories):
 + a `makefile`, generating a well suited `Makefile.coq` from;
 + a `_CoqProject` file listing;
 + Coq source code files `*.v`;
