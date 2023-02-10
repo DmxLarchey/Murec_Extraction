@@ -96,6 +96,9 @@ Extraction Inline sig_monotonic comp reify.
 Extraction Inline umin₀_compute.
 Extraction Inline Id_compute Zr_compute Sc_compute Pr_compute Mn_compute Cn_compute.
 
+(* unit is extracted as unit () *)
+Extract Inductive unit => "unit" [ "()" ].
+
 (* indices extracted as (unbounded) nat *)
 Extract Inductive idx => "nat" [ "O" "S" ].
 

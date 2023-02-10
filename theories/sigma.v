@@ -21,6 +21,9 @@ Notation "⟪ x , h ⟫" := (exist _ x h) (at level 0, format "⟪ x , h ⟫").
 Notation π₁ := proj1_sig.
 Notation π₂ := proj2_sig.
 
+Notation "'⌊' P '⌋ᵤ'" := (exist _ tt P) (at level 1, format "⌊ P ⌋ᵤ").
+Notation πᵤ := proj2_sig.
+
 Definition reify {X Y} {P : X → Y → Prop} : (∀ x, { y | P x y }) → { f : X → Y | ∀ x, P x (f x) } :=
   λ df, exist (λ f, ∀ x, P x (f x)) (λ x, π₁ (df x)) (λ x, π₂ (df x)).
 

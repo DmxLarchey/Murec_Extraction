@@ -20,7 +20,7 @@ Section map_compute.
 
   Variable (X Y : Type)
            (F : X → Y → Prop)
-           (Fcomp : ∀x, computable (F x)).
+           (Fcomp : ∀x, computableᵤ (F x)).
 
   (* Sharing the computation of the invisible witnesses *)
   Lemma vec_distrib_ex {a} (x : X) (Xₐ : vec X a) :
@@ -54,7 +54,7 @@ Section map_compute.
     match Xₐ with
       | ⟨⟩     => λ _, ⟪⟨⟩, vmc_PO1⟫
       | x ∷ Xa => λ e, let (ey, eY)  := vec_distrib_ex x Xa e in
-                       let (y, Fy)   := Fcomp x ey in
+                       let (y, Fy)   := Fcomp x ⌊ey⌋ᵤ in
                        let (Ya, FYa) := vec_map_compute _ Xa eY in
                        ⟪y ∷ Ya, vmc_PO2 Fy FYa⟫
      end.

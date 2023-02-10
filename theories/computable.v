@@ -63,7 +63,7 @@ Section Cn_compute.
 
   Definition Cn_compute : ∀Va, computable (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
     λ Va cVa,
-      let (Vb,cVb) := vec_map_compute (λ Sa cSVa, compute Sa Va cSVa) Sab (Cn_p1 cVa) in
+      let (Vb,cVb) := vec_map_compute (λ Sa cSVa, compute Sa Va (πᵤ cSVa)) Sab (Cn_p1 cVa) in
       let (y,cy)   := compute Sb Vb (Cn_p2 cVa cVb)
       in  ⟪y,Cn_p3 cVb cy⟫.
 
@@ -79,9 +79,9 @@ Section Pr_compute.
   Definition Pr_compute : ∀Va', computable (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
     vec_S_inv (λ z Va,
       prim_rec_compute (ra_sem_fun _)
-                       (λ V cV, compute Sa V cV)
+                       (λ V cV, compute Sa V (πᵤ cV))
                        (λ _ _ _, ra_sem_fun _ _)
-                       (λ V n x cVnx, compute Sa'' (n ∷ x ∷ V) cVnx)
+                       (λ V n x cVnx, compute Sa'' (n ∷ x ∷ V) (πᵤ cVnx))
                        Va
                        z
     ).
@@ -97,7 +97,7 @@ Section Mn_compute.
 
   Definition Mn_compute Va : computable (Mn ⟦Sa'⟧ Va) :=
     umin₀_compute (λ _, ra_sem_fun _ _)
-                  (λ n cn, compute Sa' (n ∷ Va) cn).
+                  (λ n cn, compute Sa' (n ∷ Va) (πᵤ cn)).
 
 End Mn_compute.
 
