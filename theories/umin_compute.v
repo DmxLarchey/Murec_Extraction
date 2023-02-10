@@ -17,7 +17,7 @@ Section umin_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, computable (F n)).
+           (f : ∀ p : { n | ex (F n) }, sig (F (π₁ p))).
 
   Arguments Ffun {_ _ _}.
 
@@ -50,7 +50,7 @@ Section umin_compute.
   (* The Let before the Fixpoint below forces the inlining of loop inside
      linear_search *)
   Let Fixpoint loop n (d : 𝔻 n) (b : btwn (pos_at F) s n) : sig (umin F s) :=
-    let (k,Hk) := f n (𝔻_π₁ d) in
+    let (k,Hk) := f ⟪n,𝔻_π₁ d⟫ in
     match k return F _ k → _ with
     | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
     | S _ => λ e, loop (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
@@ -82,7 +82,7 @@ Section umin₀_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, computable (F n)).
+           (f : ∀ p : { n | ex (F n) }, sig (F (π₁ p))).
 
   Definition umin₀_compute : computable (umin₀ F) :=
     sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
