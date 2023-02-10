@@ -1,11 +1,21 @@
-Dear reviewer,
+(**************************************************************)
+(*   Copyright Dominique Larchey-Wendling    [*]              *)
+(*             Jean-François Monin           [+]              *)
+(*                                                            *)
+(*           [*] Affiliation LORIA - CNRS                     *)
+(*           [+] Affiliation VERIMAG - Univ. Grenoble Alpes   *)
+(**************************************************************)
+(*      This file is distributed under the terms of the       *)
+(*        CeCILL v2.1 FREE SOFTWARE LICENSE AGREEMENT         *)
+(**************************************************************)
 
 This artifact contains the Coq code intimately associated with submission 
 to the _International Conference on Interactive Theorem Proving_ [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
 
      "Proof pearl: extraction of µ-recursive schemes in Coq"
 
-The code contained in this GitHub repository is distributed under an open source license.
+The code in this GitHub repository is distributed under the
+`CeCILL v2.1` open source software license.
 
 This artifact consists in:
 + a makefile, generating a well suited Makefile.coq from;
@@ -64,5 +74,3 @@ nano hide.diff
 ./switch.pl main
 make clean
 
-Thank you for your attention!
- 
