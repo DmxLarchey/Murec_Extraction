@@ -1,3 +1,4 @@
+```
 (**************************************************************)
 (*   Copyright Dominique Larchey-Wendling    [*]              *)
 (*             Jean-François Monin           [+]              *)
@@ -8,6 +9,7 @@
 (*      This file is distributed under the terms of the       *)
 (*        CeCILL v2.1 FREE SOFTWARE LICENSE AGREEMENT         *)
 (**************************************************************)
+```
 
 This artifact contains the Coq code intimately associated with submission 
 to the _International Conference on Interactive Theorem Proving_ [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
