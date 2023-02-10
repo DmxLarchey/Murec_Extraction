@@ -17,7 +17,7 @@ to the _International Conference on Interactive Theorem Proving_ [(ITP 2023)](ht
      "Proof pearl: extraction of µ-recursive schemes in Coq"
 
 The code in this GitHub repository is distributed under the
-`CeCILL v2.1` open source software license.
+[`CeCILL v2.1` open source software license](Licence_CeCILL_V2.1-en.txt).
 
 This artifact consists in:
 + a makefile, generating a well suited Makefile.coq from;
