@@ -78,3 +78,77 @@ nano hide.diff
 ./switch.pl main
 make clean
 ```
+
+Without using the above mentionned _unit_ or _hide_ tricks, we
+already obtain the following Ocaml extracted code from the
+certified implementation of µ-recursive algorithms:
+
+```
+type nat =
+| O
+| S of nat
+
+type 'a sig0 = 'a
+  (* singleton inductive, whose constructor was exist *)
+
+(** val vec_prj : 'a1 list -> nat -> 'a1 **)
+
+let rec vec_prj u i =
+  match u with
+  | [] -> assert false (* absurd case *)
+  | x::v -> (match i with
+             | O -> x
+             | S j -> vec_prj v j)
+
+type recalg =
+| Ra_zero
+| Ra_succ
+| Ra_proj of nat
+| Ra_comp of recalg * recalg list
+| Ra_prec of recalg * recalg
+| Ra_umin of recalg
+
+type 'x computable = __ -> 'x
+
+(** val vec_map_compute : ('a1 -> 'a2 computable) -> 'a1 list -> 'a2 list **)
+
+let rec vec_map_compute fcomp = function
+| [] -> []
+| x::xa -> (fcomp x __)::(vec_map_compute fcomp xa)
+
+(** val prim_rec_compute :
+    ('a1 -> 'a2 computable) -> ('a1 -> nat -> 'a2 -> 'a2 computable) -> 'a1
+    -> nat -> 'a2 **)
+
+let rec prim_rec_compute fcomp gcomp x = function
+| O -> fcomp x __
+| S n -> gcomp x n (prim_rec_compute fcomp gcomp x n) __
+
+(** val umin_compute : (nat -> nat computable) -> nat -> nat **)
+
+let rec umin_compute f s =
+  match f s __ with
+  | O -> s
+  | S _ -> umin_compute f (S s)
+
+(** val ra_compute : recalg -> nat list -> nat **)
+
+let rec ra_compute sk vk =
+  match sk with
+  | Ra_zero -> O
+  | Ra_succ ->
+    (match vk with
+     | [] -> assert false (* absurd case *)
+     | y::_ -> S y)
+  | Ra_proj i -> vec_prj vk i
+  | Ra_comp (sb, skb) ->
+    ra_compute sb (vec_map_compute (fun sa _ -> ra_compute sa vk) skb)
+  | Ra_prec (sb, sb'') ->
+    (match vk with
+     | [] -> assert false (* absurd case *)
+     | y::u ->
+       prim_rec_compute (fun v _ -> ra_compute sb v) (fun v n x _ ->
+         ra_compute sb'' (n::(x::v))) u y)
+  | Ra_umin sb' -> umin_compute (fun n _ -> ra_compute sb' (n::vk)) O
+```
+
