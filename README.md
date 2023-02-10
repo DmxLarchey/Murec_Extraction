@@ -27,26 +27,27 @@ This artifact consists in:
 
 The diff files are intended to visualize and switch between 
 three branches of the source code:
-+ the regular branch used as main basis for the paper;
-+ the "unit" and "hide" branches, discussed in the
-  Extraction section of the paper, and which explore
++ the regular `murec_artifact` branch used as main basis for the paper;
++ the [`murec_artifact_unit`](https://github.com/DmxLarchey/Murec_Extraction/pull/1) 
+  and [`murec_artifact_hide`](https://github.com/DmxLarchey/Murec_Extraction/pull/2) branches/PR, 
+  discussed in the Extraction section of the paper, and which explore
   ways to get the cleanest possible OCaml extraction.
 
-The Coq code was developed under Coq 8.15: 
+The Coq code was developed under Coq `8.15`: 
 - but it should compile under various versions of Coq, 
-  starting from at least Coq 8.10. 
+  starting from at least Coq `8.10`. 
 - we positively tested the following version of
-  Coq on this code: 8.10.2, 8.11.2, 8.12.2, 
-     8.13.[1,2], 8.14.1, and 8.15.[0,2].
+  Coq on this code: `8.10.2`, `8.11.2`, `8.12.2`, 
+     `8.13.[1,2]`, `8.14.1`, and `8.15.[0,2]`.
 - the code does not use any external libraries except 
-  from the Init, Utf8 and Extraction modules of the 
+  from the `Init`, `Utf8` and `Extraction` modules of the 
   Coq standard library which requires no additional
   installation process besides that of Coq itself.
 
 To run the compilation and extraction process,
 just type `make all` in a terminal. This process 
 should last no more than 5 seconds. The extracted 
-OCaml code should appear under the "ra.ml" file as 
+OCaml code should appear under the `ra.ml` file as 
 well as in the terminal directly.
 
 After compilation, the Coq code can be reviewed using 
@@ -57,6 +58,7 @@ updates needed for switching between branches.
 Below, we give a typical example for terminal interaction 
 in the directory of the artifact:
 
+```
 mkdir artifact
 cd artifact
 tar zxvf .../artifact.tar.gz
@@ -75,4 +77,4 @@ more ra.ml
 nano hide.diff
 ./switch.pl main
 make clean
-
+```
