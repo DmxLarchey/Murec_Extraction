@@ -1,4 +1,15 @@
-Require Import Utf8 Extraction.
+(**************************************************************)
+(*   Copyright Dominique Larchey-Wendling    [*]              *)
+(*             Jean-François Monin           [+]              *)
+(*                                                            *)
+(*           [*] Affiliation LORIA - CNRS                     *)
+(*           [+] Affiliation VERIMAG - Univ. Grenoble Alpes   *)
+(**************************************************************)
+(*      This file is distributed under the terms of the       *)
+(*        CeCILL v2.1 FREE SOFTWARE LICENSE AGREEMENT         *)
+(**************************************************************)
+
+From Coq Require Import Utf8 Extraction.
 
 From MuRec Require Import sigma relations arith_mini index vec
                           recalg recalg_semantics computable.

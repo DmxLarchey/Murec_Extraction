@@ -1,6 +1,17 @@
-Require Import Utf8.
+(**************************************************************)
+(*   Copyright Dominique Larchey-Wendling    [*]              *)
+(*             Jean-François Monin           [+]              *)
+(*                                                            *)
+(*           [*] Affiliation LORIA - CNRS                     *)
+(*           [+] Affiliation VERIMAG - Univ. Grenoble Alpes   *)
+(**************************************************************)
+(*      This file is distributed under the terms of the       *)
+(*        CeCILL v2.1 FREE SOFTWARE LICENSE AGREEMENT         *)
+(**************************************************************)
 
-Require Import relations arith_mini.
+From Coq Require Import Utf8.
+
+From MuRec Require Import relations arith_mini.
 
 Section btwn.
 
