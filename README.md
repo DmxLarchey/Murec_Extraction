@@ -20,19 +20,19 @@ The code in this GitHub repository is distributed under the
 [`CeCILL v2.1` open source software license](Licence_CeCILL_V2.1-en.txt).
 
 This artifact consists in:
-+ a makefile, generating a well suited Makefile.coq from;
-+ a _CoqProject file listing;
-+ Coq source code files *.v;
-+ and also two diff files: [unit,hide].diff;
++ a `makefile`, generating a well suited `Makefile.coq` from;
++ a `_CoqProject` file listing;
++ Coq source code files `*.v`;
++ and also two diff files: `[unit,hide].diff`;
 
-The diff files are intended to visualize and switch between 
-three branches of the source code:
+The diff files or the two _pull requests (PR)_ below are intended to visualize 
+the difference between the three branches of the source code:
 + the regular `murec_artifact` branch used as main basis for the paper;
 + the [`murec_artifact_unit`](https://github.com/DmxLarchey/Murec_Extraction/pull/1) 
   and [`murec_artifact_hide`](https://github.com/DmxLarchey/Murec_Extraction/pull/2) branches/PR, 
   discussed in the Extraction section of the paper, and which explore
   ways to get the cleanest possible OCaml extraction.
-
+  
 The Coq code was developed under Coq `8.15`: 
 - but it should compile under various versions of Coq, 
   starting from at least Coq `8.10`. 
