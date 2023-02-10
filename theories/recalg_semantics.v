@@ -26,7 +26,7 @@ Reserved Notation " '⟦' f '⟧' " (at level 1, format "⟦ f ⟧").
 Section relational_semantics.
 
   (* The relational semantics as graphs of µ-recursive algorithms.
-     These definitions follow [BBJ2002]. See schemes.v for more details 
+     These definitions follow [BBJ2002]. See schemes.v for more details
       on prim_rec and u_min
    *)
 
@@ -55,24 +55,24 @@ Section relational_semantics.
     λ Va y, ∃Vb, φb Vb y ∧ ∀ i, ψab.[i] Va Vb.[i].
 
   (* Think of vec_S_inv (λ x v, ...) w as a way to write
-         match w with 
-           x ∷ v => ... 
+         match w with
+           x ∷ v => ...
          end
-     but on a w of type vec _ (S _) *) 
+     but on a w of type vec _ (S _) *)
 
   (* Definition of Primitive recursion. But see also schemes.v for the definition of prim_rec *)
 
   Definition Pr {a} (φa : IO a) (ψa'' : IO (2+a)) : IO (1+a) :=
     vec_S_inv (λ n Va, prim_rec φa (λ Wa m y, ψa'' (m ∷ y ∷ Wa)) Va n).
 
-  (* We check the consistency with the reference definition pp 67 of [BBJ2002] also denoted 
+  (* We check the consistency with the reference definition pp 67 of [BBJ2002] also denoted
      Pr there.  *)
 
   Goal ∀ a φa ψa'' Va y, @Pr a φa ψa'' (0 ∷ Va) y = φa Va y.
   Proof. reflexivity. Qed.
 
   Goal ∀ a φa ψa'' n Va y, @Pr a φa ψa'' (S n ∷ Va) y = ∃o, Pr φa ψa'' (n ∷ Va) o ∧ ψa'' (n ∷ o ∷ Va) y.
-  Proof. reflexivity. Qed. 
+  Proof. reflexivity. Qed.
 
   (* pp 70 of [BBJ2002] denoted Mn there. But see also schemes.v for the definition of u_minₐ *)
   Definition Mn {a} (φa' : IO (1+a)) : IO a :=

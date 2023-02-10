@@ -69,9 +69,9 @@ Section linear_search.
     | 𝔻ls_next _ dₛ   => λ _, dₛ
     end.
 
-  (* The existence of n such that ℙre_ls s n is 
-     the pre-condition for a terminating 
-     linear search starting at s *) 
+  (* The existence of n such that ℙre_ls s n is
+     the pre-condition for a terminating
+     linear search starting at s *)
   Definition ℙre_ls s := (Dtest ∧₁ P) ∧₁ btwn Dtest s.
 
   (* The value n such that ℙost_ls s n characterizes,
@@ -109,7 +109,7 @@ Section linear_search.
     | right q => loop_ℕ (S n) (𝔻ls_π₂ d q)
     end.
 
-  (* In order to have a meaningful post-condition, 
+  (* In order to have a meaningful post-condition,
      we now fix a starting point of linear search *)
   Variable s : nat.
 
@@ -120,7 +120,7 @@ Section linear_search.
      implements linear search and computes the least m greater or equal
      to s such that P m, starting the search at n.
 
-     It is still written as a "recursive terminal" function, including 
+     It is still written as a "recursive terminal" function, including
      with respect to the computation of the proof of the post-condition. *)
 
   Let Fixpoint loop n (d : 𝔻ls n) (b : btwn (Dtest ∧₁ Q) s n) : sig (ℙost_ls s) :=

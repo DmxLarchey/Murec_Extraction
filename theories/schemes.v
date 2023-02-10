@@ -9,10 +9,10 @@
 (*        CeCILL v2.1 FREE SOFTWARE LICENSE AGREEMENT         *)
 (**************************************************************)
 
-(** Textbook reference: 
+(** Textbook reference:
     [BBJ2002]: Computability and Logic
                Boolos, G.S. and Burgess, J.P. and Jeffrey, R.C.
-               4th Edition, Cambridge University Press, 2002.   
+               4th Edition, Cambridge University Press, 2002.
 *)
 
 From Coq Require Import Utf8.

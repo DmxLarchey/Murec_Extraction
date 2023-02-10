@@ -85,7 +85,7 @@ Section vec_basics.
   (* Beware that with that definition, vec_{head,tail} are not recognized
      as sub-terms of v. This could be needed in case of Fixpoints on
      inductive types nesting vec. The cause of this is the dependent pattern-matching
-     returning vec_S_inv_t in vec_S_inv. The more standard definition of 
+     returning vec_S_inv_t in vec_S_inv. The more standard definition of
      vec_head (resp. vec_tail) does not have this issue because the return type
      is eg is_succ n → X which becomes non-dependent when (n := S _). *)
 

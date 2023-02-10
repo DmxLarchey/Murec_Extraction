@@ -94,7 +94,7 @@ Section umin_compute.
      intended algorithm (umin_compute), by the very definition of computable.
   *)
 
-  (* The Let before the Fixpoint below forces the inlining of loop inside 
+  (* The Let before the Fixpoint below forces the inlining of loop inside
      linear_search *)
   Let Fixpoint loop n (d : 𝔻 n) (b : btwn (pos_at F) s n) : sig (umin F s) :=
     let (k,Hk) := f n (𝔻_π₁ d) in

@@ -41,12 +41,12 @@ Section recalg_coq.
       This gives a VERY short proof of the *totality* of Coq !!!
 
       By "totality" here, we mean eg that given a binary relation
-      R : nat → nat → Prop which is 
+      R : nat → nat → Prop which is
 
-        a) described by a µ-recursive algorithm 
-        b) and *provably total* in Coq 
+        a) described by a µ-recursive algorithm
+        b) and *provably total* in Coq
 
-      one can compute a Coq term f : nat → nat which 
+      one can compute a Coq term f : nat → nat which
       realises that relation, ie ∀x, R x (f x).
    *)
 
@@ -55,7 +55,7 @@ Section recalg_coq.
        will perform an analysis of their code to verify that they
        only call the fixpoint on sub-terms of the argument Sa *)
 
-   (*  We renamed "a" into "k" to avoid name clash on Sa between 
+   (*  We renamed "a" into "k" to avoid name clash on Sa between
        ra_compute and Cn_compute at Extraction, which generates
        a fresh new name like "sa0", not so nice at display *)
   Fixpoint ra_compute k (Sk : recalg k) : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=

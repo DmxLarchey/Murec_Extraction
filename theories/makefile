@@ -26,6 +26,12 @@ Makefile.coq: _CoqProject
 
 force _CoqProject Makefile: ;
 
+whitespaces: force
+	find . -type f -name "*.v" -exec sed --in-place 's/[[:space:]]\+$$//' {} \+
+
+wc: force
+	coqwc `find -name "*.v"`
+
 %: Makefile.coq force
 	@+$(MAKE) -f Makefile.coq $@
 

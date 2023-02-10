@@ -58,8 +58,8 @@ Infix "⊆₂" := included₂ (at level 70, no associativity).
 Fact included₁_refl {X} (P : X → Prop) : P ⊆₁ P.
 Proof. now intro. Qed.
 
-(* Left-recursive notation for tuples of proofs of propositions for logical conjunctions 
-   the ₚ suffix is here to remind that tuple are proof of [P]roposition and distinguish 
+(* Left-recursive notation for tuples of proofs of propositions for logical conjunctions
+   the ₚ suffix is here to remind that tuple are proof of [P]roposition and distinguish
    with the tuple notation for vectors *)
 Notation "⟨ a , b , .. , c ⟩ₚ" := (conj .. (conj a b) .. c) (at level 0, format "⟨ a , b , .. , c ⟩ₚ").
 
