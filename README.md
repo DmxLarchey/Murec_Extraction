@@ -1,19 +1,13 @@
 Dear reviewer,
 
-This artifact contains the Coq code intimately associated with submission #35
-to the The 12th ACM SIGPLAN International Conference on Certified Programs 
-and Proofs (CPP 2023).
+This artifact contains the Coq code intimately associated with submission 
+to the _International Conference on Interactive Theorem Proving_ [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
 
-     "Proof pearl: on the µ-algorithmic completeness of Coq"
+     "Proof pearl: extraction of µ-recursive schemes in Coq"
 
-The code contained in this archive is for your eyes only and property
-of the (for the time being) anonymous author(s) of the submission. If the 
-paper gets selected for publication at CPP'23, we will release the code 
-in a public and long lasting repository, hyperlinked to the accepted paper,
-and under an open source license.
+The code contained in this GitHub repository is distributed under an open source license.
 
 This artifact consists in:
-+ this README file;
 + a makefile, generating a well suited Makefile.coq from;
 + a _CoqProject file listing;
 + Coq source code files *.v;
