@@ -84,6 +84,9 @@ already obtain the following Ocaml extracted code from the
 certified implementation of µ-recursive algorithms:
 
 ```
+type __ = Obj.t
+let __ = let rec f _ = Obj.repr f in Obj.repr f
+
 type nat =
 | O
 | S of nat
