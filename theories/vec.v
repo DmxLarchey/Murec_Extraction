@@ -11,7 +11,7 @@
 
 From Coq Require Import Utf8.
 
-From MuRec Require Import index.
+From MuRec Require Import index sigma.
 
 Reserved Notation "v .[ i ]" (at level 1, format "v .[ i ]").
 Reserved Notation "x '∷' v" (at level 60, right associativity, format "x  ∷  v").
@@ -125,6 +125,35 @@ Section vec_basics.
         intro; apply (H (𝕊 _)).
   Qed.
 
+  Fixpoint vec_set {n} : (idx n → X) → vec n :=
+    match n with 
+    | 0   => λ _, ⟨⟩
+    | S n => λ f, f 𝕆 ∷ vec_set (λ i, f (𝕊 i))
+    end.
+
+  Fact vec_prj_set n f (i : idx n) : (vec_set f).[i] = f i.
+  Proof.
+    induction i as [ | n i IHi ] in f |- *; simpl; trivial.
+    apply IHi.
+  Qed.
+
+  Fixpoint vec_iter {n} : ∀ {R : idx n → X → Prop}, (∀i, { x | R i x }) → { v | ∀i, R i v.[i] }.
+  Proof.
+    refine (
+    match n with 
+    | 0   => λ _ _, exist _ ⟨⟩ _
+    | S n => λ R f, let (x,hx) := f 𝕆 in
+                    let (v,hv) := vec_iter _ _ (λ i, f (𝕊 i)) in
+                    exist _ (x ∷ v) _
+    end).
+   + exact (λ i, match idx_inv i with end).
+   + refine (λ i, _).
+     refine (match idx_inv i in idx_shape_S _ j return (R j (x ∷ v).[j]) with
+     | idx_shape_S_fst _   => hx
+     | idx_shape_S_nxt _ j => hv j
+     end).
+  Defined. 
+
 End vec_basics.
 
 Arguments vec_nil {_}.
@@ -133,6 +162,8 @@ Arguments vec_inv {_ _}.
 Arguments vec_prj {_ _}.
 Arguments vec_head {_ _} _ /.
 Arguments vec_tail {_ _} _ /.
+Arguments vec_set {_ _} _ /.
+Arguments vec_iter {_ _ _} _ /.
 
 Arguments vec_O_inv {_ _}.
 Arguments vec_S_inv {_ _ _}.

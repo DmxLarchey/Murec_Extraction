@@ -58,14 +58,15 @@ Section recalg_coq.
    (*  We renamed "a" into "k" to avoid name clash on Sa between
        ra_compute and Cn_compute at Extraction, which generates
        a fresh new name like "sa0", not so nice at display *)
-  Fixpoint ra_compute k (Sk : recalg k) : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
+
+  Fixpoint ra_compute {k} (Sk : recalg k) : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
     match Sk with
     | ra_zero         => Zr_compute
     | ra_succ         => Sc_compute
     | ra_proj i       => Id_compute i
-    | ra_comp Sb Skb  => Cn_compute ra_compute Sb Skb
-    | ra_prec Sb Sb'' => Pr_compute ra_compute Sb Sb''
-    | ra_umin Sb'     => Mn_compute ra_compute Sb'
+    | ra_comp Sb Skb  => Cn_compute (ra_compute Sb) (λ i, ra_compute Skb.[i])
+    | ra_prec Sb Sb'' => Pr_compute (ra_compute Sb) (ra_compute Sb'')
+    | ra_umin Sb'     => Mn_compute (ra_compute Sb')
     end.
 
 End recalg_coq.
@@ -102,6 +103,8 @@ Extract Inductive idx => "nat" [ "O" "S" ].
 (* vectors extracted as Ocaml lists *)
 Extract Inductive vec => "list" [ "[]" "(::)" ].
 
+Recursive Extraction ra_compute.
+
 Extraction Implicit idx_fst [n].
 Extraction Implicit idx_nxt [n].
 
@@ -111,15 +114,16 @@ Extraction Implicit vec_prj     [n].
 
 Extraction Implicit recalg      [1].
 Extraction Implicit ra_proj     [a].
-Extraction Implicit ra_comp     [a b].
-Extraction Implicit ra_prec     [a].
-Extraction Implicit ra_umin     [a].
+Extraction Implicit ra_comp     [].
+Extraction Implicit ra_prec     [].
+Extraction Implicit ra_umin     [].
 
 Extraction Implicit vec_map_compute [a].
+Extraction Implicit vec_iter [R].
 Extraction Implicit Id_compute [a].
 
-Extraction Implicit ra_compute [k].
-Extraction Implicit coq_is_total [a].
+Extraction Implicit ra_compute [].
+Extraction Implicit coq_is_total [].
 
 Recursive Extraction ra_compute.
 Extraction "ra.ml" ra_compute coq_is_total.

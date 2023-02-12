@@ -14,23 +14,27 @@ From Coq Require Import Utf8.
 From MuRec Require Import sigma schemes index vec recalg recalg_semantics.
 From MuRec Require Export computable_def map_compute prim_rec_compute umin_compute.
 
-Definition Zr_compute V1 : computable (Zr V1) := λ _, ⟪0,eq_refl⟫.
+Definition Zr_compute V0 : computable (Zr V0) := λ _, ⟪0,eq_refl⟫.
 Definition Sc_compute : ∀V1, computable (Sc V1) := vec_S_inv (λ x _ _, ⟪S x, eq_refl⟫).
 Definition Id_compute {a} (i : idx a) Va : computable (Id i Va) := λ _, ⟪Va.[i], eq_refl⟫.
 
 Section Cn_compute.
 
-  Variables (compute : ∀{a} (Sa : recalg a) Va, computable (⟦Sa⟧ Va))
-            (a b : nat) (Sb : recalg b) (Sab : vec (recalg a) b).
+  Variables (* compute : ∀{a} (Sa : recalg a) Va, computable (⟦Sa⟧ Va *)
+            (a b : nat) 
+            (Sb : recalg b)           (cSb : ∀Vb, computable (⟦Sb⟧ Vb))
+            (Sab : vec (recalg a) b)  (cSab : ∀ i Va, computable (⟦Sab.[i]⟧ Va)).
 
   Section Cn_props.
 
     Variables (Va : vec nat a) (cVa : ∃y, Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va y).
 
-    Local Fact Cn_p1 : ∃Vb, ∀i, ⟦Sab.[i]⟧ Va Vb.[i].
+    Local Fact Cn_p1 : ∀i, ex (⟦Sab.[i]⟧ Va).
     Proof.
       destruct cVa as (y & Wb & H1 & H2).
-      exists Wb; intro i; specialize (H2 i).
+      intros i.
+      specialize (H2 i).
+      exists (Wb.[i]).
       now rewrite vec_prj_map in H2.
     Qed.
 
@@ -62,43 +66,44 @@ Section Cn_compute.
   Arguments Cn_p3 {_ _} _ {_}.
 
   Definition Cn_compute : ∀Va, computable (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
-    λ Va cVa,
-      let (Vb,cVb) := vec_map_compute (λ Sa cSVa, compute Sa Va cSVa) Sab (Cn_p1 cVa) in
-      let (y,cy)   := compute Sb Vb (Cn_p2 cVa cVb)
-      in  ⟪y,Cn_p3 cVb cy⟫.
+    λ Va cVa, let (Vb,cVb) := vec_iter (λ i, cSab i Va (Cn_p1 cVa i)) in
+              let (y,cy)   := cSb Vb (Cn_p2 cVa cVb) 
+              in  ⟪y,Cn_p3 cVb cy⟫.
 
 End Cn_compute.
 
-Arguments Cn_compute compute {a b} Sb Sab.
+Arguments Cn_compute {a b Sb} _ {Sab} _.
 
 Section Pr_compute.
 
-  Variables (compute : ∀{a} (Sa : recalg a) Va, computable (⟦Sa⟧ Va))
-            (a : nat) (Sa : recalg a) (Sa'' : recalg (2+a)).
+  Variables (*compute : ∀{a} (Sa : recalg a) Va, computable (⟦Sa⟧ Va)*)
+            (a : nat) 
+            (Sa : recalg a)       (cSa   : ∀Va, computable (⟦Sa⟧ Va))
+            (Sa'' : recalg (2+a)) (cSa'' : ∀Va'', computable (⟦Sa''⟧ Va'')).
 
   Definition Pr_compute : ∀Va', computable (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
     vec_S_inv (λ z Va,
       prim_rec_compute (ra_sem_fun _)
-                       (λ V cV, compute Sa V cV)
+                       (λ V cV, cSa V cV)
                        (λ _ _ _, ra_sem_fun _ _)
-                       (λ V n x cVnx, compute Sa'' (n ∷ x ∷ V) cVnx)
+                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) cVnx)
                        Va
                        z
     ).
 
 End Pr_compute.
 
-Arguments Pr_compute compute {a} Sa Sa''.
+Arguments Pr_compute {a Sa} _ {Sa''}.
 
 Section Mn_compute.
 
-  Variables (compute : ∀{a} (Sa : recalg a) Va, computable (⟦Sa⟧ Va))
-            (a : nat) (Sa' : recalg (1+a)).
+  Variables (*compute : ∀{a} (Sa : recalg a) Va, computable (⟦Sa⟧ Va) *)
+            (a : nat) (Sa' : recalg (1+a)) (cSa' : ∀Va', computable (⟦Sa'⟧ Va')).
 
   Definition Mn_compute Va : computable (Mn ⟦Sa'⟧ Va) :=
     umin₀_compute (λ _, ra_sem_fun _ _)
-                  (λ n cn, compute Sa' (n ∷ Va) cn).
+                  (λ n cn, cSa' (n ∷ Va) cn).
 
 End Mn_compute.
 
-Arguments Mn_compute compute {a} Sa'.
+Arguments Mn_compute {a Sa'} _.
