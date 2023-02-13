@@ -19,8 +19,7 @@ Section map_compute.
       ie partial vector map *)
 
   Variable (X Y : Type)
-           (F : X → Y → Prop)
-           (Fcomp : ∀x, computable (F x)).
+           (F : X → Y → Prop).
 
   (* Sharing the computation of the invisible witnesses *)
   Lemma vec_distrib_ex {a} (x : X) (Xₐ : vec X a) :
@@ -50,16 +49,16 @@ Section map_compute.
 
   Arguments vmc_PO2 {_ _ _} _ {_ _} _.
 
-  Fixpoint vec_map_compute a (Xₐ : vec X a) { struct Xₐ } : computable (λ Yₐ, ∀i, F Xₐ.[i] Yₐ.[i]) :=
-    match Xₐ with
-      | ⟨⟩     => λ _, ⟪⟨⟩, vmc_PO1⟫
-      | x ∷ Xa => λ e, let (ey, eY)  := vec_distrib_ex x Xa e in
-                       let (y, Fy)   := Fcomp x ey in
-                       let (Ya, FYa) := vec_map_compute _ Xa eY in
-                       ⟪y ∷ Ya, vmc_PO2 Fy FYa⟫
-     end.
+  Fixpoint vec_map_compute a (Xa : vec X a) { struct Xa } : 
+       (∀i, computable (F Xa.[i])) → computable (λ Ya, ∀i, F Xa.[i] Ya.[i]) :=
+    match Xa with
+    | ⟨⟩     => λ _ _,    ⟪⟨⟩, vmc_PO1⟫
+    | x ∷ Xa => λ HxXa e, let (ey, eY)  := vec_distrib_ex x Xa e in
+                          let (y,Fy)    := HxXa 𝕆 ey in
+                          let (Ya, FYa) := vec_map_compute _ Xa (λ i, HxXa (𝕊 i)) eY in
+                          ⟪y ∷ Ya, vmc_PO2 Fy FYa⟫
+    end.
 
 End map_compute.
 
-Arguments vec_map_compute {X Y F} Fcomp {a}.
-
+Arguments vec_map_compute {X Y} F {a Xa}.

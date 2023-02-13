@@ -103,8 +103,6 @@ Extract Inductive idx => "nat" [ "O" "S" ].
 (* vectors extracted as Ocaml lists *)
 Extract Inductive vec => "list" [ "[]" "(::)" ].
 
-Recursive Extraction ra_compute.
-
 Extraction Implicit idx_fst [n].
 Extraction Implicit idx_nxt [n].
 
@@ -114,18 +112,17 @@ Extraction Implicit vec_prj     [n].
 
 Extraction Implicit recalg      [1].
 Extraction Implicit ra_proj     [a].
-Extraction Implicit ra_comp     [].
-Extraction Implicit ra_prec     [].
-Extraction Implicit ra_umin     [].
+Extraction Implicit ra_comp     [a b].
+Extraction Implicit ra_prec     [a].
+Extraction Implicit ra_umin     [a].
 
 Extraction Implicit vec_map_compute [a].
 Extraction Implicit vec_iter [R].
 Extraction Implicit Id_compute [a].
 
-Extraction Implicit ra_compute [].
-Extraction Implicit coq_is_total [].
+Extraction Implicit ra_compute [k].
 
 Recursive Extraction ra_compute.
-Extraction "ra.ml" ra_compute coq_is_total.
+
 
 

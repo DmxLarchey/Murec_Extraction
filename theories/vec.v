@@ -154,6 +154,16 @@ Section vec_basics.
      end).
   Defined. 
 
+  Definition vec_reif n : ∀ {R : idx n → X → Prop}, (∀i, ex (R i)) → exists v, ∀i, R i v.[i].
+  Proof.
+    induction n as [ | n IHn ]; intros R f.
+    + exists ⟨⟩; intros i; destruct (idx_inv i).
+    + destruct (f 𝕆) as (x & hx).
+      destruct (IHn _ (λ i, f (𝕊 i))) as (v & hv).
+      exists (x ∷ v).
+      intros i; destruct (idx_inv i); simpl; auto.
+  Qed.
+
 End vec_basics.
 
 Arguments vec_nil {_}.
