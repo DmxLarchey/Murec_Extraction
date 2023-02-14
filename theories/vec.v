@@ -158,3 +158,25 @@ End vec_map.
 
 Notation "⟨ x ⟩" :=  (x ∷ ⟨⟩) (at level 0, format "⟨ x ⟩").
 Notation "⟨ x ; y ; .. ; z ⟩" :=  (x ∷ (y ∷ .. (z ∷ ⟨⟩) ..)) (at level 0, format "⟨ x ; y ; .. ; z ⟩").
+
+Section hvec.
+
+  Variables (X : Type) (P : X → Type).
+
+  Inductive hvec : forall {n}, vec X n → Type :=
+    | hvec_nil : hvec ⟨⟩
+    | hvec_cons {n x v} : P x → @hvec n v → hvec (x ∷ v).
+
+  Definition vec_hmap (f : forall x, P x) : ∀ {n} v, @hvec n v :=
+    fix loop {n} v :=
+      match v with
+      | ⟨⟩    => hvec_nil
+      | x ∷ v => hvec_cons (f x) (loop v)
+      end.
+
+End hvec.
+
+Arguments hvec {_} P {_}.
+Arguments hvec_nil {_ _}.
+Arguments hvec_cons {_ _ _ _ _}.
+Arguments vec_hmap {X P} _ {n} _.

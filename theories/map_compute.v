@@ -13,53 +13,43 @@ From Coq Require Import Utf8.
 
 From MuRec Require Import sigma relations index vec computable_def.
 
-Section map_compute.
+Section hvec_map_compute.
 
   (** Any X-indexed family of computable Y-predicates can be lifted on vectors,
       ie partial vector map *)
 
-  Variable (X Y : Type)
-           (F : X → Y → Prop)
-           (Fcomp : ∀x, computable (F x)).
-
-  (* Sharing the computation of the invisible witnesses *)
-  Lemma vec_distrib_ex {a} (x : X) (Xₐ : vec X a) :
-      (∃ Yₐ', ∀ i, F (x ∷ Xₐ).[i] Yₐ'.[i])
-    → (∃ y : Y, F x y) ∧ (∃ Yₐ, ∀ i, F Xₐ.[i] Yₐ.[i]).
-  Proof.
-    destruct 1 as (Ya' & FYa'); destruct (vec_inv Ya') as [y Ya]; split.
-    + exists y; exact (FYa' 𝕆).
-    + exists Ya; exact (λ i, FYa' (𝕊 i)).
-  Qed.
+  Variable (C X Y : Type)
+           (F : C → X → Y → Prop).
 
   Section vec_map_compute_props.
 
-    Local Fact vmc_PO1 i : F ⟨⟩.[i] ⟨⟩.[i].
+    Variable x : X.
+
+    Local Fact hvmc_PO1 i : F ⟨⟩.[i] x ⟨⟩.[i].
     Proof. destruct (idx_inv i). Qed.
 
-    Variables (a : nat) (x : X) (y : Y)
-              (Fy : F x y)
-              (Xa : vec X a)
-              (Ya : vec Y a)
-              (FYa : ∀ i, F Xa.[i] Ya.[i]).
+    Variables (c : C) (y : Y) (a : nat) (Ca : vec C a) (Ya : vec Y a)
+              (Fc : F c x y)
+              (FCa : ∀ i, F Ca.[i] x Ya.[i]).
 
-    Local Fact vmc_PO2 i : F (x ∷ Xa).[i] (y ∷ Ya).[i].
+    Local Fact hvmc_PO2 i : F (c ∷ Ca).[i] x (y ∷ Ya).[i].
     Proof. now destruct (idx_inv i); cbn. Qed.
 
   End vec_map_compute_props.
 
-  Arguments vmc_PO2 {_ _ _} _ {_ _} _.
+  Arguments hvmc_PO1 {_}.
+  Arguments hvmc_PO2 {_ _ _ _ _ _}.
 
-  Fixpoint vec_map_compute a (Xₐ : vec X a) { struct Xₐ } : computable (λ Yₐ, ∀i, F Xₐ.[i] Yₐ.[i]) :=
-    match Xₐ with
-      | ⟨⟩     => λ _, ⟪⟨⟩, vmc_PO1⟫
-      | x ∷ Xa => λ e, let (ey, eY)  := vec_distrib_ex x Xa e in
-                       let (y, Fy)   := Fcomp x ey in
-                       let (Ya, FYa) := vec_map_compute _ Xa eY in
-                       ⟪y ∷ Ya, vmc_PO2 Fy FYa⟫
-     end.
+  Fixpoint hvec_map_compute {b} {v : vec C b} (hv : hvec (λ c, forall y, ex (F c y) → sig (F c y)) v) :
+         ∀y, (∀i, ex (F v.[i] y)) → { w | ∀i, F v.[i] y w.[i] } :=
+    match hv with
+    | hvec_nil =>        λ _ _,  ⟪⟨⟩, hvmc_PO1⟫
+    | hvec_cons xF hv => λ y hy, let (x,Fx) := xF y (hy 𝕆) in
+                                 let (w,Fw) := hvec_map_compute hv y (λ i, hy (𝕊 _)) in
+                                 ⟪x ∷ w, hvmc_PO2 Fx Fw⟫
+    end.
 
-End map_compute.
+End hvec_map_compute.
 
-Arguments vec_map_compute {X Y F} Fcomp {a}.
+Arguments hvec_map_compute {C X Y F b v}.
 

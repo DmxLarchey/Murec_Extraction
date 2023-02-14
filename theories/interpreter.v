@@ -58,14 +58,14 @@ Section recalg_coq.
    (*  We renamed "a" into "k" to avoid name clash on Sa between
        ra_compute and Cn_compute at Extraction, which generates
        a fresh new name like "sa0", not so nice at display *)
-  Fixpoint ra_compute k (Sk : recalg k) : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
+  Fixpoint ra_compute {k} (Sk : recalg k) : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
     match Sk with
     | ra_zero         => Zr_compute
     | ra_succ         => Sc_compute
     | ra_proj i       => Id_compute i
-    | ra_comp Sb Skb  => Cn_compute ra_compute Sb Skb
-    | ra_prec Sb Sb'' => Pr_compute ra_compute Sb Sb''
-    | ra_umin Sb'     => Mn_compute ra_compute Sb'
+    | ra_comp Sb Skb  => Cn_compute (ra_compute Sb) (vec_hmap ra_compute Skb)
+    | ra_prec Sb Sb'' => Pr_compute (ra_compute Sb) (ra_compute Sb'')
+    | ra_umin Sb'     => Mn_compute (ra_compute Sb')
     end.
 
 End recalg_coq.
@@ -91,6 +91,8 @@ Print Assumptions ra_compute.
 Check coq_is_total.
 Print Assumptions coq_is_total.
 
+Recursive Extraction ra_compute.
+
 Extraction Inline vec_S_inv.
 Extraction Inline sig_monotonic comp reify.
 Extraction Inline umin₀_compute.
@@ -108,14 +110,18 @@ Extraction Implicit idx_nxt [n].
 Extraction Implicit vec         [1].
 Extraction Implicit vec_cons    [n].
 Extraction Implicit vec_prj     [n].
-
+Extraction Implicit hvec        [n 1 2].
+Extraction Implicit hvec_nil    [ ].
+Extraction Implicit hvec_cons    [n x v ].
+ 
 Extraction Implicit recalg      [1].
 Extraction Implicit ra_proj     [a].
 Extraction Implicit ra_comp     [a b].
 Extraction Implicit ra_prec     [a].
 Extraction Implicit ra_umin     [a].
 
-Extraction Implicit vec_map_compute [a].
+Extraction Implicit vec_hmap [P n].
+Extraction Implicit hvec_map_compute [C X Y F b v].
 Extraction Implicit Id_compute [a].
 
 Extraction Implicit ra_compute [k].
