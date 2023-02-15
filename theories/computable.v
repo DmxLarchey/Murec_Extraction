@@ -70,13 +70,6 @@ Section Cn_compute.
               let (y,hy) := cSb w (Cn_p2 cVa hw) in
               ⟪y, Cn_p3 hw hy⟫.
 
-(*
-    λ Va cVa,
-      let (Vb,cVb) := vec_map_compute (λ Sa cSVa, compute Sa Va (πᵤ cSVa)) Sab (Cn_p1 cVa) in
-      let (y,cy)   := compute Sb Vb (Cn_p2 cVa cVb)
-      in  ⟪y,Cn_p3 cVb cy⟫.
-*)
-
 End Cn_compute.
 
 Arguments Cn_compute {a b Sb} _ {Sab} _.
