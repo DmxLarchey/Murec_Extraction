@@ -21,12 +21,14 @@ Definition Id_compute {a} (i : idx a) Va : computable (Id i Va) := λ _, ⟪Va.[
 Section Cn_compute.
 
   Variables (a b : nat) 
-            (Sb : recalg b)           (cSb : ∀Vb, computable (⟦Sb⟧ Vb))
-            (Sab : vec (recalg a) b)  (cSab : hvec (λ x, ∀Va, computable (⟦x⟧ Va)) Sab).
+            (Sb : recalg b)
+            (cSb : ∀Vb, computable (⟦Sb⟧ Vb))
+            (Sab : vec (recalg a) b)
+            (cSab : ∀Va, (∀i, ∃ y, ⟦Sab.[i]⟧ Va y) → {w | ∀ i, ⟦Sab.[i]⟧ Va w.[i] }).
 
   Section Cn_props.
 
-    Variables (Va : vec nat a) (cVa : ∃y, Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va y).
+    Variables (Va : vec nat a) (cVa : ex (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va)).
 
     Local Fact Cn_p1 : ∀i, ∃y, ⟦Sab.[i]⟧ Va y.
     Proof.
@@ -36,7 +38,7 @@ Section Cn_compute.
       now rewrite vec_prj_map in H2.
     Qed.
 
-    Variables (Vb : vec nat b) (cVb : ∀i, ⟦Sab.[i]⟧ Va Vb.[i]).
+    Variables (Vb : vec nat b) (HVb : ∀i, ⟦Sab.[i]⟧ Va Vb.[i]).
 
     Fact Cn_p2 : ∃y, ⟦Sb⟧ Vb y.
     Proof.
@@ -44,9 +46,9 @@ Section Cn_compute.
       exists y.
       replace Vb with Wb; trivial.
       apply vec_prj_ext; intros i.
-      specialize (H2 i); specialize (cVb i).
+      specialize (H2 i); specialize (HVb i).
       rewrite vec_prj_map in H2.
-      revert H2 cVb; apply ra_sem_fun.
+      revert H2 HVb; apply ra_sem_fun.
     Qed.
 
     Variables (y : nat) (Hy : ⟦Sb⟧ Vb y).
@@ -60,17 +62,19 @@ Section Cn_compute.
   End Cn_props.
 
   Arguments Cn_p1 {_}.
-  Arguments Cn_p2 {_} _ {_}.
-  Arguments Cn_p3 {_ _} _ {_}.
+  Arguments Cn_p2 {_} _ {_} _.
+  Arguments Cn_p3 {_} {_} _ {_}.
 
   Definition Cn_compute : ∀Va, computable (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
-    λ Va cVa, let (w,hw) := hvec_map_compute cSab Va (Cn_p1 cVa) in 
-              let (y,hy) := cSb w (Cn_p2 cVa hw) in 
+    λ Va cVa, let (w,hw) := cSab Va (Cn_p1 cVa) in 
+              let (y,hy) := cSb w (Cn_p2 cVa hw) in
               ⟪y, Cn_p3 hw hy⟫.
 
 End Cn_compute.
 
-Arguments Cn_compute {a b Sb} cSb {Sab} cSab.
+Check Cn_compute.
+
+Arguments Cn_compute {a b Sb} _ {Sab} _.
 
 Section Pr_compute.
 
