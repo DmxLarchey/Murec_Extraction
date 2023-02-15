@@ -79,8 +79,6 @@ Section Cn_compute.
 
 End Cn_compute.
 
-Check Cn_compute.
-
 Arguments Cn_compute {a b Sb} _ {Sab} _.
 
 Section Pr_compute.
