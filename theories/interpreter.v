@@ -58,15 +58,32 @@ Section recalg_coq.
    (*  We renamed "a" into "k" to avoid name clash on Sa between
        ra_compute and Cn_compute at Extraction, which generates
        a fresh new name like "sa0", not so nice at display *)
-  Fixpoint ra_compute {k} (Sk : recalg k) : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
+  Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk).
+  refine(
     match Sk with
     | ra_zero         => Zr_compute
     | ra_succ         => Sc_compute
     | ra_proj i       => Id_compute i
-    | ra_comp Sb Skb  => Cn_compute (ra_compute Sb) (vec_hmap ra_compute Skb)
-    | ra_prec Sb Sb'' => Pr_compute (ra_compute Sb) (ra_compute Sb'')
-    | ra_umin Sb'     => Mn_compute (ra_compute Sb')
-    end.
+    | ra_comp Sb Skb  => λ Vk HVk, let (Vb,HVb) := vec_dmap (λ x, @ra_compute _ x Vk) Skb _ in
+                                   let (z,Hz) := ra_compute _ Sb Vb _ in
+                                   ⟪z, _⟫
+    | ra_prec Sb Sb'' => Pr_compute (ra_compute _ Sb) (ra_compute _ Sb'')
+    | ra_umin Sb'     => Mn_compute (ra_compute _ Sb')
+    end).
+  + destruct HVk as (y & w & H1 & H2).
+    intros i.
+    exists w.[i].     
+    specialize (H2 i).
+    now rewrite vec_prj_map in H2.
+  + destruct HVk as (y & w & H1 & H2); exists y.
+    assert (Vb = w) as ->; auto.
+    apply vec_prj_ext; intros i.
+    generalize (HVb i) (H2 i).
+    rewrite vec_prj_map.
+    apply ra_sem_fun.
+  + exists Vb; split; auto.
+    intro; now rewrite vec_prj_map.
+  Qed.
 
 End recalg_coq.
 
@@ -120,7 +137,9 @@ Extraction Implicit ra_comp     [a b].
 Extraction Implicit ra_prec     [a].
 Extraction Implicit ra_umin     [a].
 
-Extraction Implicit vec_hmap [P n].
+Check vec_dmap.
+
+Extraction Implicit vec_dmap [n].
 Extraction Implicit hvec_map_compute [C X Y F b v].
 Extraction Implicit Id_compute [a].
 

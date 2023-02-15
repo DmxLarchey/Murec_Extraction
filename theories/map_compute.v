@@ -13,6 +13,50 @@ From Coq Require Import Utf8.
 
 From MuRec Require Import sigma relations index vec computable_def.
 
+Section vec_dmap.
+
+  Variables (X Y : Type)
+            (F : X → Y → Prop)
+            (f : ∀ x, ex (F x) → sig (F x)).
+
+  Section vec_map_compute_props.
+
+    Local Fact vdm_PO1 i : F ⟨⟩.[i] ⟨⟩.[i].
+    Proof. destruct (idx_inv i). Qed.
+
+    Variables (x : X) (n : nat) (v : vec X n) (y : Y) (w : vec Y n)
+              (Fx : F x y)
+              (Fv : ∀ i, F v.[i] w.[i]).
+
+    Local Fact vdm_PO2 i : F (x ∷ v).[i] (y ∷ w).[i].
+    Proof. now destruct (idx_inv i); cbn. Qed.
+
+  End vec_map_compute_props.
+
+  Arguments vdm_PO2 {_ _ _ _ _}.
+
+  Fixpoint vec_dmap {n} (v : vec X n) : (∀i, ex (F v.[i])) → { w | ∀i, F v.[i] w.[i] } :=
+    match v with 
+    | ⟨⟩    => λ _,   ⟪⟨⟩, vdm_PO1⟫
+    | x ∷ v => λ hxv, let (y,hy) := f x (hxv 𝕆) in 
+                      let (w,hw) := vec_dmap v (λ i, hxv (𝕊 i)) in 
+                      ⟪y ∷ w, vdm_PO2 hy hw⟫
+    end.
+
+(*
+  Definition vec_dmap {n} {v : vec X n} : (exists w, ∀i, F v.[i] w.[i]) → { w | ∀i, F v.[i] w.[i] }.
+  Proof.
+    intros H; apply vec_dmap_rec.
+    destruct H as (w & Hw); intros i; now exists w.[i].
+  Qed.
+*)
+
+End vec_dmap.
+
+Check vec_dmap.
+Arguments vec_dmap {_ _ _} _ {n} v.
+
+
 Section hvec_map_compute.
 
   (** Any X-indexed family of computable Y-predicates can be lifted on vectors,
