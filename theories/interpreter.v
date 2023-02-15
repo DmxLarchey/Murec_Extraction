@@ -14,6 +14,8 @@ From Coq Require Import Utf8 Extraction.
 From MuRec Require Import sigma relations arith_mini index vec
                           recalg recalg_semantics computable.
 
+Reserved Notation " '⟦' f '⟧ₒ' " (at level 1, format "⟦ f ⟧ₒ").
+
 Section recalg_coq.
 
   (* ra_sem Sa = ⟦Sa⟧ : vec nat a → nat → Prop is defined 
@@ -50,15 +52,26 @@ Section recalg_coq.
       ra_compute and Cn_compute at Extraction, which generates
       a fresh new name like "sa0", not so nice at display *)
 
-  Fixpoint ra_compute k (Sk : recalg k) : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
+   (** Beware that only vec_map_compute receives the
+       fixpoint ra_compute itself as first argument hence 
+       the guard-checker will perform an analysis of its code
+       to verify that it calls the fixpoint on sub-terms 
+       of the argument Skb *)
+
+   (*  We renamed "a" into "k" to avoid name clash on Sa between
+       ra_compute and Cn_compute at Extraction, which generates
+       a fresh new name like "sa0", not so nice at display *)
+
+  Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
     match Sk with
     | ra_zero         => Zr_compute
     | ra_succ         => Sc_compute
     | ra_proj i       => Id_compute i
-    | ra_comp Sb Skb  => Cn_compute ra_compute Sb Skb
-    | ra_prec Sb Sb'' => Pr_compute ra_compute Sb Sb''
-    | ra_umin Sb'     => Mn_compute ra_compute Sb'
-    end.
+    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ Sa cSa, ⟦Sa⟧ₒ Va (πᵤ cSa)) Sab cVa)
+    | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
+    | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
+    end
+  where "⟦ f ⟧ₒ" := (ra_compute f).
 
 End recalg_coq.
 
@@ -115,14 +128,17 @@ Extraction Implicit idx_nxt [n].
 Extraction Implicit vec         [1].
 Extraction Implicit vec_cons    [n].
 Extraction Implicit vec_prj     [n].
-
+Extraction Implicit hvec        [n 1 2].
+Extraction Implicit hvec_nil    [ ].
+Extraction Implicit hvec_cons    [n x v ].
+ 
 Extraction Implicit recalg      [1].
 Extraction Implicit ra_proj     [a].
 Extraction Implicit ra_comp     [a b].
 Extraction Implicit ra_prec     [a].
 Extraction Implicit ra_umin     [a].
 
-Extraction Implicit vec_map_compute [a].
+Extraction Implicit vec_map_compute [n].
 Extraction Implicit Id_compute [a].
 
 Extraction Implicit ra_compute [k].
