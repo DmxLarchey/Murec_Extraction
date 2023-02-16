@@ -39,11 +39,11 @@ Section vec_dmap.
     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
       match v with
       | ⟨⟩    => λ _,   ⟪⟨⟩, vdm_PO1⟫
-      | x ∷ v => λ hxv, let (y,hy) := f x (hxv 𝕆) in
-                        let (w,hw) := loop v (λ i, hxv (𝕊 i)) in
+      | x ∷ v => λ hxv, let (y, hy) := f x (hxv 𝕆) in
+                        let (w, hw) := loop v (λ i, hxv (𝕊 i)) in
                         ⟪y ∷ w, vdm_PO2 hy hw⟫
       end in
-    λ hv, loop v (λ i, let (w,hw) := hv in ⟪w.[i],hw i⟫ₚ).
+    λ hv, loop v (λ i, let (w, hw) := hv in ⟪w.[i], hw i⟫ₚ).
 
 End vec_dmap.
 
