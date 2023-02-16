@@ -24,16 +24,16 @@ Section Cn_compute.
             (Sb : recalg b)
             (cSb : ∀Vb, computable (⟦Sb⟧ Vb))
             (Sab : vec (recalg a) b)
-            (cSab : ∀Va, (∀i, ∃ y, ⟦Sab.[i]⟧ Va y) → {w | ∀ i, ⟦Sab.[i]⟧ Va w.[i] }).
+            (cSab : ∀Va, computable (λ w, ∀i, ⟦Sab.[i]⟧ Va w.[i])).
 
   Section Cn_props.
 
     Variables (Va : vec nat a) (cVa : ex (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va)).
 
-    Local Fact Cn_p1 : ∀i, ∃y, ⟦Sab.[i]⟧ Va y.
+    Local Fact Cn_p1 : ∃w, ∀i, ⟦Sab.[i]⟧ Va w.[i].
     Proof.
       destruct cVa as (y & Wb & H1 & H2).
-      intros i; exists Wb.[i].
+      exists Wb; intros i.
       specialize (H2 i).
       now rewrite vec_prj_map in H2.
     Qed.
