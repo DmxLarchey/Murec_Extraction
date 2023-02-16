@@ -35,16 +35,15 @@ Section vec_dmap.
 
   Arguments vdm_PO2 {_ _ _ _ _}.
 
-  Let Fixpoint loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → { w | ∀i, F v.[i] w.[i] } :=
-    match v with 
-    | ⟨⟩    => λ _,   ⟪⟨⟩, vdm_PO1⟫
-    | x ∷ v => λ hxv, let (y,hy) := f x (hxv 𝕆) in 
-                      let (w,hw) := loop v (λ i, hxv (𝕊 i)) in 
-                      ⟪y ∷ w, vdm_PO2 hy hw⟫
-    end.
-
   Definition vec_map_compute {n} (v : vec X n) : computable (λ w, ∀i, F v.[i] w.[i]) :=
-    λ hv, loop v (let (w,hw) := hv in λ i, ⟪w.[i],hw i⟫ₚ).
+    let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
+      match v with
+      | ⟨⟩    => λ _,   ⟪⟨⟩, vdm_PO1⟫
+      | x ∷ v => λ hxv, let (y,hy) := f x (hxv 𝕆) in
+                        let (w,hw) := loop v (λ i, hxv (𝕊 i)) in
+                        ⟪y ∷ w, vdm_PO2 hy hw⟫
+      end in
+    λ hv, loop v (λ i, let (w,hw) := hv in ⟪w.[i],hw i⟫ₚ).
 
 End vec_dmap.
 
