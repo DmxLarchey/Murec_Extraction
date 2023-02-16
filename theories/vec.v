@@ -96,23 +96,23 @@ Section vec_basics.
        on a vector in the type vec 0 in a convenient way.
        Given a goal of the form
 
-            Gamma |- ∀v : vec 0, P v 
+            Γ |- ∀v : vec 0, P v 
 
        the call to the tactic "apply vec_O_inv"
        transforms the goal into:
 
-            Gamma |- P ⟨⟩
+            Γ |- P ⟨⟩
 
        vec_S_inv allows to implement pattern matching
        on a vector in the type vec (S _) in a convenient way.
        Given a goal of the form 
 
-            Gamma |- ∀v : vec (S n), P v 
+            Γ |- ∀v : vec (S n), P v 
 
        the call to the tactic "apply vec_S_inv"
        transforms the goal into:
 
-            Gamma |- ∀ x (v : vec n), P (x ∷ v)
+            Γ |- ∀ x (v : vec n), P (x ∷ v)
 
        We exploit this on the example of a recursor
        for two vectors of the same length.
