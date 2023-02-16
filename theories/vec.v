@@ -43,6 +43,9 @@ Section vec_basics.
 
   Section vec_O_inv.
 
+    (* See section vec_OS_inv_example below for 
+       explanations on how to use vec_O_inv *)
+
     Let vec_O_inv_t {n} : vec n → Type :=
       match n with
       | 0 => λ v, ∀P, P ⟨⟩ → P v
@@ -60,7 +63,12 @@ Section vec_basics.
 
   End vec_O_inv.
 
+  Arguments vec_O_inv {_}.
+
   Section vec_S_inv.
+
+    (* See section vec_OS_inv_example below for 
+       explanations on how to use vec_S_inv *)
 
     Let vec_S_inv_t {n} : vec n → Type :=
       match n with
@@ -81,6 +89,46 @@ Section vec_basics.
   End vec_S_inv.
 
   Arguments vec_S_inv {_ _}.
+
+  Section vec_OS_inv_example.
+
+    (* vec_O_inv allows to implement pattern matching
+       on a vector in the type vec 0 in a convenient way.
+       Given a goal of the form
+
+            Gamma |- ∀v : vec 0, P v 
+
+       the call to the tactic "apply vec_O_inv"
+       transforms the goal into:
+
+            Gamma |- P ⟨⟩
+
+       vec_S_inv allows to implement pattern matching
+       on a vector in the type vec (S _) in a convenient way.
+       Given a goal of the form 
+
+            Gamma |- ∀v : vec (S n), P v 
+
+       the call to the tactic "apply vec_S_inv"
+       transforms the goal into:
+
+            Gamma |- ∀ x (v : vec n), P (x ∷ v)
+
+       We exploit this on the example of a recursor
+       for two vectors of the same length.
+     *)
+
+     Variables (P : forall {n}, vec n → vec n → Type)
+               (HP0 : P ⟨⟩ ⟨⟩)
+               (HPS : ∀ {n x y} {v w : vec n}, P v w → P (x∷v) (y∷w)).
+
+     Fixpoint vec_rect2 {n} (v : vec n) : ∀w, P v w :=
+       match v with
+       | ⟨⟩    => vec_O_inv HP0
+       | _ ∷ v => vec_S_inv (λ _ w, HPS (vec_rect2 v w))
+       end.
+
+  End vec_OS_inv_example.
 
   (* Beware that with that definition, vec_{head,tail} are not recognized
      as sub-terms of v. This could be needed in case of Fixpoints on
@@ -159,24 +207,13 @@ End vec_map.
 Notation "⟨ x ⟩" :=  (x ∷ ⟨⟩) (at level 0, format "⟨ x ⟩").
 Notation "⟨ x ; y ; .. ; z ⟩" :=  (x ∷ (y ∷ .. (z ∷ ⟨⟩) ..)) (at level 0, format "⟨ x ; y ; .. ; z ⟩").
 
-Section hvec.
+(** The code below is to check how 
+    vec_O_inv and vec_S_inv are friendly 
+    to extraction 
+*)
 
-  Variables (X : Type) (P : X → Type).
-
-  Inductive hvec : forall {n}, vec X n → Type :=
-    | hvec_nil : hvec ⟨⟩
-    | hvec_cons {n x v} : P x → @hvec n v → hvec (x ∷ v).
-
-  Definition vec_hmap (f : forall x, P x) : ∀ {n} v, @hvec n v :=
-    fix loop {n} v :=
-      match v with
-      | ⟨⟩    => hvec_nil
-      | x ∷ v => hvec_cons (f x) (loop v)
-      end.
-
-End hvec.
-
-Arguments hvec {_} P {_}.
-Arguments hvec_nil {_ _}.
-Arguments hvec_cons {_ _ _ _ _}.
-Arguments vec_hmap {X P} _ {n} _.
+(*
+Require Import Extraction.
+Extraction Inline vec_O_inv vec_S_inv.
+Extraction vec_rect2.
+*)
