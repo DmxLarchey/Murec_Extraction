@@ -207,10 +207,9 @@ End vec_map.
 Notation "⟨ x ⟩" :=  (x ∷ ⟨⟩) (at level 0, format "⟨ x ⟩").
 Notation "⟨ x ; y ; .. ; z ⟩" :=  (x ∷ (y ∷ .. (z ∷ ⟨⟩) ..)) (at level 0, format "⟨ x ; y ; .. ; z ⟩").
 
-(** The code below is to check how 
+(** The code below allows to check that
     vec_O_inv and vec_S_inv are friendly 
-    to extraction 
-*)
+    to extraction *)
 
 (*
 Require Import Extraction.
