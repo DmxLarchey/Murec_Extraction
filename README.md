@@ -12,12 +12,15 @@
 ```
 
 This artifact contains the Coq code intimately associated with submission 
-to the _International Conference on Interactive Theorem Proving_ [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
+to the _International Conference on Interactive Theorem Proving_ 
+[(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
 
-     "Proof pearl: extraction of µ-recursive schemes in Coq"
+     "Proof pearl: faithful computation and extraction of µ-recursive algorithms in Coq"
 
 The code in this GitHub repository is distributed under the
 [`CeCILL v2.1` open source software license](Licence_CeCILL_V2.1-en.txt).
+
+# What it is there
 
 This artifact consists, in the sub-directory [`theories`](theories):
 + a `makefile`, generating a well suited `Makefile.coq` from;
@@ -29,9 +32,13 @@ The diff files or the two _pull requests (PR)_ below are intended to visualize
 the difference between the three branches of the source code:
 + the regular `murec_artifact` branch used as main basis for the paper;
 + the [`murec_artifact_unit`](https://github.com/DmxLarchey/Murec_Extraction/pull/1) 
-  and [`murec_artifact_hide`](https://github.com/DmxLarchey/Murec_Extraction/pull/2) branches/PR, 
-  discussed in the Extraction section of the paper, and which explore
+  and [`murec_artifact_hide`](https://github.com/DmxLarchey/Murec_Extraction/pull/2) 
+  branches/PR, discussed in the Extraction section of the paper, and which explore
   ways to get the cleanest possible OCaml extraction.
+
+# How to compile et review
+
+## Which Coq version
   
 The Coq code was developed under Coq `8.15`: 
 - but it should compile under various versions of Coq, 
@@ -43,6 +50,8 @@ The Coq code was developed under Coq `8.15`:
   from the `Init`, `Utf8` and `Extraction` modules of the 
   Coq standard library which requires no additional
   installation process besides that of Coq itself.
+
+## The commands to compile
 
 To run the compilation and extraction process,
 just type `make all` in a terminal. This process 
@@ -61,8 +70,9 @@ in the directory of the artifact:
 ```
 mkdir artifact
 cd artifact
-tar zxvf .../artifact.tar.gz
+tar zxvf [...]/artifact.tar.gz
 
+cd theories
 make all
 more ra.ml
 coqide interpreter.v
@@ -79,8 +89,67 @@ nano hide.diff
 make clean
 ```
 
-Without using the above mentionned _unit_ or _hide_ tricks, we
-already obtain the following Ocaml extracted code from the
+## Switching between branches
+
+Notice the `switch.pl` perl script that allows to 
+change between the different branches of the code without
+using `git` commands. One can of course alternatively
+`clone` the [github repository](https://github.com/DmxLarchey/Murec_Extraction/)
+using the command 
+
+```
+git clone https://github.com/DmxLarchey/Murec_Extraction/
+```
+
+and then switch between branches using the regular (eg)
+`git checkout hide` command but using `switch.pl` together 
+with `git checkout` should be avoided since they both 
+transform the code without synchronizing between each other.
+
+## What are the `unit` and `hide` branches
+
+The tricks are described in the paper. Here we give a
+short overview. They are designed to remove the `Obj.t`
+and `__` OCaml constructs that `Extraction` uses to 
+bypass the limitation of the OCaml type system as 
+compared to that of Coq.
+
+The `unit` trick consists in replacing 
+
+```
+computable {X} (P : X → Prop) := ex P → sig P
+```
+
+with
+
+```
+computableᵤ {X} (P : X → Prop) := {_ : unit | ex P} → sig P
+```
+
+at some selected points in the code, those where some
+parameter of a higher order function is a partial
+function itself. Notice that the termination certificate
+`ex P` is now hidden under an _added_ argument of type
+`unit` which is then extracted in place of (the smashed 
+proof of) the proposition `P`.
+
+The `hide` trick replaces `computable` with the following
+alternative
+
+```
+.... : ∀ p : { x | ex (P n) }, sig (P (π₁ p))
+```
+
+choosing one of the existing computational arguments to hide 
+the termination certificate under it. In particular this
+requires the termination to be hidden after the argument
+it depends on, but also that such a computational argument
+exists.
+
+# What is the output of extraction
+
+Without using the above mentionned _unit_ or _hide_ tricks, 
+we already obtain the following Ocaml extracted code from the
 certified implementation of µ-recursive algorithms:
 
 ```
