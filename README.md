@@ -70,7 +70,9 @@ in the directory of the artifact:
 ```
 mkdir artifact
 cd artifact
-tar zxvf [...]/artifact.tar.gz
+unzip murec_artifact.zip
+
+# or git clone, see below
 
 cd theories
 make all
@@ -98,7 +100,7 @@ using `git` commands. One can of course alternatively
 using the command 
 
 ```
-git clone https://github.com/DmxLarchey/Murec_Extraction/
+git clone https://github.com/DmxLarchey/Murec_Extraction.git
 ```
 
 and then switch between branches using the regular (eg)
