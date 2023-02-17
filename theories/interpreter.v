@@ -128,10 +128,7 @@ Extraction Implicit idx_nxt [n].
 Extraction Implicit vec         [1].
 Extraction Implicit vec_cons    [n].
 Extraction Implicit vec_prj     [n].
-Extraction Implicit hvec        [n 1 2].
-Extraction Implicit hvec_nil    [ ].
-Extraction Implicit hvec_cons    [n x v ].
- 
+
 Extraction Implicit recalg      [1].
 Extraction Implicit ra_proj     [a].
 Extraction Implicit ra_comp     [a b].
