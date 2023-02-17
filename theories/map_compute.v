@@ -35,7 +35,7 @@ Section vec_dmap.
 
   Arguments vdm_PO2 {_ _ _ _ _}.
 
-  Definition vec_map_compute {n} (v : vec X n) : computable (λ w, ∀i, F v.[i] w.[i]) :=
+  Definition vec_map_compute : ∀{n} (v : vec X n), computable (λ w, ∀i, F v.[i] w.[i]) :=
     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
       match v with
       | ⟨⟩    => λ _,   ⟪⟨⟩, vdm_PO1⟫
@@ -43,7 +43,7 @@ Section vec_dmap.
                         let (w, hw) := loop v (λ i, hxv (𝕊 i)) in
                         ⟪y ∷ w, vdm_PO2 hy hw⟫
       end in
-    λ hv, loop v (λ i, let (w, hw) := hv in ⟪w.[i], hw i⟫ₚ).
+    λ n v hv, loop v (λ i, let (w, hw) := hv in ⟪w.[i], hw i⟫ₚ).
 
 End vec_dmap.
 
