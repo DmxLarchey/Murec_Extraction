@@ -66,9 +66,9 @@ Section Cn_compute.
   Arguments Cn_p3 {_} {_} _ {_}.
 
   Definition Cn_compute : ∀Va, computable (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
-    λ Va cVa, let (w,hw) := cSab Va (Cn_p1 cVa) in 
-              let (y,hy) := cSb w (Cn_p2 cVa hw) in
-              ⟪y, Cn_p3 hw hy⟫.
+    λ Va cVa, let (w,cw) := cSab Va (Cn_p1 cVa) in 
+              let (y,cy) := cSb w (Cn_p2 cVa cw) in
+              ⟪y, Cn_p3 cw cy⟫.
 
 End Cn_compute.
 
