@@ -141,4 +141,7 @@ Extraction Implicit coq_is_total [a].
 Recursive Extraction ra_compute.
 Extraction "ra.ml" ra_compute.
 
+Extraction Language Haskell.
+Extraction "ra.hs" ra_compute.
+
 
