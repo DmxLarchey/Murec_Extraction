@@ -20,13 +20,15 @@ diffs_private:
 
 filelist_private: diffs_private
 	echo README.md > filelist.txt
+	echo Licence_CeCILL_V2.1-en.txt >> filelist.txt
 	echo theories/_CoqProject >> filelist.txt
 	echo theories/makefile >> filelist.txt
 	echo theories/switch.pl >> filelist.txt
 	( cd .. && find \( -name "*.v" -o -name "*.diff" \) ) >> filelist.txt 
 
-artifact_private: diffs_private
-	tar -C .. -zcvf artifact.tar.gz -T filelist.txt
+artifact_private: diffs_private filelist_private
+	tar -C .. -zcvf ../murec_artifact.tar.gz -T filelist.txt
+	cat filelist.txt | ( cd .. && zip murec_artifact -@ ) 
 
 Makefile.coq: _CoqProject
 	coq_makefile -f _CoqProject -o Makefile.coq
