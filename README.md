@@ -69,11 +69,11 @@ Below, we give a typical example for terminal interaction
 in the directory of the artifact:
 
 ```
-mkdir artifact58
-cd artifact58
-unzip [...]/murec_artifact58.zip 
+mkdir murec_artifact_58
+cd murec_artifact_58
+unzip [...]/murec_artifact.zip 
 
-# or tar -zxvf [...]/murec_artifact58.tar.gz
+# or tar -zxvf [...]/murec_artifact.tar.gz
 # or git clone, see below
 
 cd theories
