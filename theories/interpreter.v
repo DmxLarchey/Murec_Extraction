@@ -18,14 +18,14 @@ Reserved Notation " '⟦' f '⟧ₒ' " (at level 1, format "⟦ f ⟧ₒ").
 
 Section recalg_coq.
 
-  (* ra_sem Sa = ⟦Sa⟧ : vec nat a → nat → Prop is defined 
-     as a structural Fixpoint on Sa in "recalg_semantics.v" 
+  (* ra_sem Sa = ⟦Sa⟧ : vec nat a → nat → Prop is defined
+     as a structural Fixpoint on Sa in "recalg_semantics.v"
      and denotes the (partial) functional relation (graph)
-     associated/interpreting the µ-recursive source code 
+     associated/interpreting the µ-recursive source code
      of the algorithm Sa as a combination of µ-recursive
      schemes *)
 
-  (* We show that the graph ⟦Sa⟧ is computable for any 
+  (* We show that the graph ⟦Sa⟧ is computable for any
      Sa : recalg a, ie it can be reified into a Coq term
 
          ∀Va : vec nat a, ex (⟦Sa⟧ Va) → sig (⟦Sa⟧ Va)
@@ -38,10 +38,10 @@ Section recalg_coq.
       will perform an analysis of their code to verify that they
       only call the fixpoint on sub-terms of the argument Sa.
 
-      Notice that this nesting *already exists* in the Fixpoint 
-      definition of ra_sem Sa = ⟦Sa⟧ in the call, that is 
-      vec_map (λ f, ⟦f⟧) Sab which is identical 
-      to vec_map ra_sem Sab. 
+      Notice that this nesting *already exists* in the Fixpoint
+      definition of ra_sem Sa = ⟦Sa⟧ in the call, that is
+      vec_map (λ f, ⟦f⟧) Sab which is identical
+      to vec_map ra_sem Sab.
 
       Notice that the branch "murec_artifact_hvec" shows that
       it is possible to write ra_compute much like ra_sem,
@@ -53,9 +53,9 @@ Section recalg_coq.
       a fresh new name like "sa0", not so nice at display *)
 
    (** Beware that only vec_map_compute receives the
-       fixpoint ra_compute itself as first argument hence 
+       fixpoint ra_compute itself as first argument hence
        the guard-checker will perform an analysis of its code
-       to verify that it calls the fixpoint on sub-terms 
+       to verify that it calls the fixpoint on sub-terms
        of the argument Skb *)
 
    (*  We renamed "a" into "k" to avoid name clash on Sa between
@@ -88,13 +88,13 @@ Print Assumptions ra_compute.
 
     Here we get the result with a much shorter and more direct proof.
     Moreover the extracted term corresponds to the OCaml implementation
-    of the algorithm described in Sa. 
+    of the algorithm described in Sa.
 
     In the ITP 17 paper, that result is obtained using a variant of
     Kleene's normal form theorem, approximating µ-recursive functions
     by bounding their computation with an extra "fuel" argument, making
     them primitive recursive thus terminating. Then Constructive Epsilon
-    is applied to compute the necessary fuel simultaneously with the 
+    is applied to compute the necessary fuel simultaneously with the
     output value, by a (dumb) exhaustive trial/error loop. *)
 
 Definition coq_is_total a (Sa : recalg a) : (∀Va, ∃y, ⟦Sa⟧ Va y) → { f | ∀Va, ⟦Sa⟧ Va (f Va) } :=
@@ -105,7 +105,7 @@ Print Assumptions coq_is_total.
 
 (** Now we configure Extraction for exclude arguments that do not
     participate in the computation and hence, enhance readabitity.
-    We inline some auxiliary functions and we extract idx to nat 
+    We inline some auxiliary functions and we extract idx to nat
     and vectors to lists. *)
 
 Extraction Inline vec_S_inv.

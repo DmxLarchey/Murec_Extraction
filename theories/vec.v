@@ -43,7 +43,7 @@ Section vec_basics.
 
   Section vec_O_inv.
 
-    (* See section vec_OS_inv_example below for 
+    (* See section vec_OS_inv_example below for
        explanations on how to use vec_O_inv *)
 
     Let vec_O_inv_t {n} : vec n → Type :=
@@ -67,7 +67,7 @@ Section vec_basics.
 
   Section vec_S_inv.
 
-    (* See section vec_OS_inv_example below for 
+    (* See section vec_OS_inv_example below for
        explanations on how to use vec_S_inv *)
 
     Let vec_S_inv_t {n} : vec n → Type :=
@@ -96,7 +96,7 @@ Section vec_basics.
        on a vector in the type vec 0 in a convenient way.
        Given a goal of the form
 
-            Γ |- ∀v : vec 0, P v 
+            Γ |- ∀v : vec 0, P v
 
        the call to the tactic "apply vec_O_inv"
        transforms the goal into:
@@ -105,9 +105,9 @@ Section vec_basics.
 
        vec_S_inv allows to implement pattern matching
        on a vector in the type vec (S _) in a convenient way.
-       Given a goal of the form 
+       Given a goal of the form
 
-            Γ |- ∀v : vec (S n), P v 
+            Γ |- ∀v : vec (S n), P v
 
        the call to the tactic "apply vec_S_inv"
        transforms the goal into:
@@ -208,7 +208,7 @@ Notation "⟨ x ⟩" :=  (x ∷ ⟨⟩) (at level 0, format "⟨ x ⟩").
 Notation "⟨ x ; y ; .. ; z ⟩" :=  (x ∷ (y ∷ .. (z ∷ ⟨⟩) ..)) (at level 0, format "⟨ x ; y ; .. ; z ⟩").
 
 (** The code below allows to check that
-    vec_O_inv and vec_S_inv are friendly 
+    vec_O_inv and vec_S_inv are friendly
     to extraction *)
 
 (*
