@@ -20,7 +20,7 @@ Definition Id_compute {a} (i : idx a) Va : computable (Id i Va) := λ _, ⟪Va.[
 
 Section Cn_compute.
 
-  Variables (a b : nat) 
+  Variables (a b : nat)
             (Sb : recalg b)
             (cSb : ∀Vb, computable (⟦Sb⟧ Vb))
             (Sab : vec (recalg a) b)
@@ -66,7 +66,7 @@ Section Cn_compute.
   Arguments Cn_p3 {_} {_} _ {_}.
 
   Definition Cn_compute : ∀Va, computable (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
-    λ Va cVa, let (w,cw) := cSab Va (Cn_p1 cVa) in 
+    λ Va cVa, let (w,cw) := cSab Va (Cn_p1 cVa) in
               let (y,cy) := cSb w (Cn_p2 cVa cw) in
               ⟪y, Cn_p3 cw cy⟫.
 
@@ -76,7 +76,7 @@ Arguments Cn_compute {a b Sb} _ {Sab} _.
 
 Section Pr_compute.
 
-  Variables (a : nat) 
+  Variables (a : nat)
             (Sa : recalg a)       (cSa : ∀Va, computable (⟦Sa⟧ Va))
             (Sa'' : recalg (2+a)) (cSa'' : ∀Va'', computable (⟦Sa''⟧ Va'')).
 

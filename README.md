@@ -11,7 +11,7 @@
 (**************************************************************)
 ```
 
-This artifact contains the Coq code intimately associated with submission 
+This artifact contains the Coq code closely associated with submission 
 to the _International Conference on Interactive Theorem Proving_ 
 [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
 
@@ -40,12 +40,12 @@ the difference between the three branches of the source code:
 
 ## Which Coq version
   
-The Coq code was developed under Coq `8.15`: 
+The Coq code was developed under Coq `8.15` and then `8.16`: 
 - but it should compile under various versions of Coq, 
   starting from at least Coq `8.10`. 
 - we positively tested the following version of
   Coq on this code: `8.10.2`, `8.11.2`, `8.12.2`, 
-     `8.13.[1,2]`, `8.14.1`, and `8.15.[0,2]`.
+     `8.13.[1,2]`, `8.14.1`, `8.15.[0,2]` and `8.16.[0,1]`.
 - the code does not use any external libraries except 
   from the `Init`, `Utf8` and `Extraction` modules of the 
   Coq standard library which requires no additional
@@ -57,7 +57,8 @@ To run the compilation and extraction process,
 just type `make all` in a terminal. This process 
 should last no more than 5 seconds. The extracted 
 OCaml code should appear under the `ra.ml` file as 
-well as in the terminal directly.
+well as in the terminal directly. Additionally, the
+file `ra.hs` receives Haskell code extraction.
 
 After compilation, the Coq code can be reviewed using 
 your favorite IDE. We also distribute colored versions 
@@ -93,10 +94,10 @@ make clean
 
 ## Switching between branches
 
-Notice the `switch.pl` perl script that allows to 
+Notice the `switch.pl` Perl script that allows to 
 change between the different branches of the code without
 using `git` commands. One can of course alternatively
-`clone` the [github repository](https://github.com/DmxLarchey/Murec_Extraction/)
+`clone` the [GitHub repository](https://github.com/DmxLarchey/Murec_Extraction/)
 using the command 
 
 ```
@@ -131,11 +132,11 @@ computableᵤ {X} (P : X → Prop) := {_ : unit | ex P} → sig P
 at some selected points in the code, those where some
 parameter of a higher order function is a partial
 function itself. Notice that the termination certificate
-`ex P` is now hidden under an _added_ argument of type
-`unit` which is then extracted in place of (the smashed 
+`ex P` is now hidden under a _supplementary argument_ of type
+`unit` which is then extracted in place of (the squashed 
 proof of) the proposition `P`.
 
-The `hide` trick replaces `computable` with the following
+The `hide` trick replaces `computable` (as above) with the following
 alternative
 
 ```
@@ -144,13 +145,13 @@ alternative
 
 choosing one of the existing computational arguments to hide 
 the termination certificate under it. In particular this
-requires the termination to be hidden after the argument
+requires the certificate to be hidden after the argument
 it depends on, but also that such a computational argument
 exists.
 
 # What is the output of extraction
 
-Without using the above mentionned _unit_ or _hide_ tricks, 
+Without using the above mentioned _unit_ or _hide_ tricks, 
 we already obtain the following Ocaml extracted code from the
 certified implementation of µ-recursive algorithms:
 
