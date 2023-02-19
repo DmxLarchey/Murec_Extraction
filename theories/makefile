@@ -26,7 +26,8 @@ filelist_private: diffs_private
 	( cd .. && find \( -name "*.v" -o -name "*.diff" \) ) >> filelist.txt 
 
 artifact_private: diffs_private
-	tar -C .. -zcvf artifact.tar.gz -T filelist.txt
+	tar -C .. -zcvf ../murec_artifact58.tar.gz -T filelist.txt
+	cat filelist.txt | ( cd .. && zip murec_artifact58 -@ ) 
 
 Makefile.coq: _CoqProject
 	coq_makefile -f _CoqProject -o Makefile.coq
