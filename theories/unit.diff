@@ -1,0 +1,246 @@
+diff --git a/theories/computable.v b/theories/computable.v
+index 8fe7161..38f24b2 100644
+--- a/theories/computable.v
++++ b/theories/computable.v
+@@ -83,9 +83,9 @@ Section Pr_compute.
+   Definition Pr_compute : ∀Va', computable (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
+     vec_S_inv (λ z Va,
+       prim_rec_compute (ra_sem_fun _)
+-                       (λ V cV, cSa V cV)
++                       (λ V cV, cSa V (πᵤ cV))
+                        (λ _ _ _, ra_sem_fun _ _)
+-                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) cVnx)
++                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) (πᵤ cVnx))
+                        Va
+                        z
+     ).
+@@ -100,7 +100,7 @@ Section Mn_compute.
+ 
+   Definition Mn_compute Va : computable (Mn ⟦Sa'⟧ Va) :=
+     umin₀_compute (λ _, ra_sem_fun _ _)
+-                  (λ n cn, cSa' (n ∷ Va) cn).
++                  (λ n cn, cSa' (n ∷ Va) (πᵤ cn)).
+ 
+ End Mn_compute.
+ 
+diff --git a/theories/computable_def.v b/theories/computable_def.v
+index c860379..8b2418c 100644
+--- a/theories/computable_def.v
++++ b/theories/computable_def.v
+@@ -15,3 +15,6 @@ From Coq Require Import Utf8.
+     can be computed out of a proof of inhabitation *)
+ 
+ Definition computable {X} (P : X → Prop) := ex P → sig P.
++Definition computable_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
++
++Notation computableᵤ := computable_unit.
+diff --git a/theories/interpreter.v b/theories/interpreter.v
+index 1da0919..d19436e 100644
+--- a/theories/interpreter.v
++++ b/theories/interpreter.v
+@@ -67,7 +67,7 @@ Section recalg_coq.
+     | ra_zero         => Zr_compute
+     | ra_succ         => Sc_compute
+     | ra_proj i       => Id_compute i
+-    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ Sa, ⟦Sa⟧ₒ Va) Sab cVa)
++    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ Sa cSa, ⟦Sa⟧ₒ Va (πᵤ cSa)) Sab cVa)
+     | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
+     | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
+     end
+@@ -113,6 +113,9 @@ Extraction Inline sig_monotonic comp reify.
+ Extraction Inline umin₀_compute.
+ Extraction Inline Id_compute Zr_compute Sc_compute Pr_compute Mn_compute Cn_compute.
+ 
++(* unit is extracted as unit () *)
++Extract Inductive unit => "unit" [ "()" ].
++
+ (* indices extracted as (unbounded) nat *)
+ Extract Inductive idx => "nat" [ "O" "S" ].
+ 
+diff --git a/theories/linear_search.v b/theories/linear_search.v
+index 2cb83fd..c233849 100644
+--- a/theories/linear_search.v
++++ b/theories/linear_search.v
+@@ -90,9 +90,7 @@ Section linear_search.
+     exact @𝔻ls_next.
+   Qed.
+ 
+-  (* test is specified by ∀n, Dtest n → {P n} + {Q n}
+-     so it is possible that neither P nor Q hold outside of Dtest *)
+-  Variable test : ∀n, Dtest n → {P n} + {Q n}.
++  Variable test : ∀n, {_ : unit | Dtest n} → {P n} + {Q n}.
+ 
+   (* loop_ℕ : ∀n, 𝔻ls n → nat
+ 
+@@ -104,7 +102,7 @@ Section linear_search.
+      Notice that it is a "recursive terminal" function. *)
+ 
+   Local Fixpoint loop_ℕ n (d : 𝔻ls n) : nat :=
+-    match test n (𝔻ls_π₁ d) with
++    match test n ⌊𝔻ls_π₁ d⌋ᵤ with
+     | left p  => n
+     | right q => loop_ℕ (S n) (𝔻ls_π₂ d q)
+     end.
+@@ -125,7 +123,7 @@ Section linear_search.
+ 
+   Let Fixpoint loop n (d : 𝔻ls n) (b : btwn (Dtest ∧₁ Q) s n) : sig (ℙost_ls s) :=
+     let t := 𝔻ls_π₁ d in
+-    match test n t with
++    match test n ⌊t⌋ᵤ with
+     | left p  => ⟪n, ⟨t,p, b⟩ₚ⟫
+     | right q => loop (S n) (𝔻ls_π₂ d q) (btwn_next b ⟨t,q⟩ₚ)
+     end.
+diff --git a/theories/map_compute.v b/theories/map_compute.v
+index cea7ec5..31036bf 100644
+--- a/theories/map_compute.v
++++ b/theories/map_compute.v
+@@ -17,7 +17,7 @@ Section vec_map_compute.
+ 
+   Variables (X Y : Type)
+             (F : X → Y → Prop)
+-            (f : ∀ x, computable (F x)).
++            (f : ∀ x, computableᵤ (F x)).
+ 
+   Section vec_map_compute_props.
+ 
+@@ -41,7 +41,7 @@ Section vec_map_compute.
+     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
+       match v with
+       | ⟨⟩    => λ _,   ⟪⟨⟩, vmc_PO1⟫
+-      | x ∷ v => λ Fxv, let (y, x_y) := f x (Fxv 𝕆) in
++      | x ∷ v => λ Fxv, let (y, x_y) := f x ⌊Fxv 𝕆⌋ᵤ in
+                         let (w, v_w) := loop v (λ i, Fxv (𝕊 i)) in
+                         ⟪y ∷ w, vmc_PO2 x_y v_w⟫
+       end in
+diff --git a/theories/prim_rec_compute.v b/theories/prim_rec_compute.v
+index cf213ba..c68fbde 100644
+--- a/theories/prim_rec_compute.v
++++ b/theories/prim_rec_compute.v
+@@ -18,10 +18,10 @@ Section prec_compute.
+   Variables (X Y : Type)
+             (F : X → Y → Prop)
+             (Ffun : functional F)
+-            (Fcomp : ∀x, computable (F x))
++            (Fcomp : ∀x, computableᵤ (F x))
+             (G : X → nat → Y → Y → Prop)
+             (Gfun : ∀ x n, functional (G x n))
+-            (Gcomp : ∀ x n y, computable (G x n y))
++            (Gcomp : ∀ x n y, computableᵤ (G x n y))
+             (x : X).
+ 
+   Section prim_rec_compute_props.
+@@ -56,9 +56,9 @@ Section prec_compute.
+ 
+   Fixpoint prim_rec_compute m : computable (prim_rec F G x m) :=
+     match m with
+-      | 0   => λ e, Fcomp x e
++      | 0   => λ e, Fcomp x ⌊e⌋ᵤ
+       | S n => λ e, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 e) in
+-                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 e y_yn) in
++                    let (yn', yn_yn') := Gcomp x n yn ⌊prc_TC2 e y_yn⌋ᵤ in
+                     ⟪yn', prc_PO1 y_yn yn_yn'⟫
+     end.
+ 
+diff --git a/theories/sigma.v b/theories/sigma.v
+index 84c46a6..fa53c52 100644
+--- a/theories/sigma.v
++++ b/theories/sigma.v
+@@ -21,6 +21,9 @@ Notation "⟪ x , h ⟫" := (exist _ x h) (at level 0, format "⟪ x ,  h ⟫").
+ Notation π₁ := proj1_sig.
+ Notation π₂ := proj2_sig.
+ 
++Notation "'⌊' P '⌋ᵤ'" := (exist _ tt P) (at level 1, format "⌊ P ⌋ᵤ").
++Notation πᵤ := proj2_sig.
++
+ Definition reify {X Y} {P : X → Y → Prop} : (∀ x, { y | P x y }) → { f : X → Y | ∀ x, P x (f x) } :=
+   λ df, exist (λ f, ∀ x, P x (f x)) (λ x, π₁ (df x)) (λ x, π₂ (df x)).
+ 
+diff --git a/theories/umin_compute.v b/theories/umin_compute.v
+index 23ab391..762d487 100644
+--- a/theories/umin_compute.v
++++ b/theories/umin_compute.v
+@@ -17,7 +17,7 @@ Section umin_compute.
+ 
+   Variable (F : nat → nat → Prop)
+            (Ffun : functional F)
+-           (f : ∀n, computable (F n)).
++           (f : ∀n, computableᵤ (F n)).
+ 
+   Arguments Ffun {_ _ _}.
+ 
+@@ -50,7 +50,7 @@ Section umin_compute.
+   (* The Let before the Fixpoint below forces the inlining of loop inside
+      linear_search *)
+   Let Fixpoint loop n (d : 𝔻 n) (b : btwn (pos_at F) s n) : sig (umin F s) :=
+-    let (k,Hk) := f n (𝔻_π₁ d) in
++    let (k,Hk) := f n ⌊𝔻_π₁ d⌋ᵤ in
+     match k return F _ k → _ with
+     | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
+     | S _ => λ e, loop (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
+@@ -82,7 +82,7 @@ Section umin₀_compute.
+ 
+   Variable (F : nat → nat → Prop)
+            (Ffun : functional F)
+-           (f : ∀n, computable (F n)).
++           (f : ∀n, computableᵤ (F n)).
+ 
+   Definition umin₀_compute : computable (umin₀ F) :=
+     sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
+diff --git a/theories/umin_compute_details.v b/theories/umin_compute_details.v
+index 690b77b..0ebeb9b 100644
+--- a/theories/umin_compute_details.v
++++ b/theories/umin_compute_details.v
+@@ -17,7 +17,7 @@ Section umin_compute.
+ 
+   Variable (F : nat → nat → Prop)
+            (Ffun : functional F)
+-           (f : ∀n, computable (F n)).
++           (f : ∀n, computableᵤ (F n)).
+ 
+   Arguments Ffun {_ _ _}.
+ 
+@@ -43,7 +43,7 @@ Section umin_compute.
+ 
+   (* Instanciation of test *)
+   Let test n (t : Dtest n) : {P n} + {Q n} :=
+-    let (k, Hk) := f n t in
++    let (k, Hk) := f n ⌊t⌋ᵤ in
+     match k return F _ k → _ with
+     | 0   => λ e, left e
+     | S k => λ e, right ⟪k,e⟫ₚ
+@@ -60,7 +60,7 @@ Section umin_compute.
+   (* Inlining the current instance of test inside loop_orig *)
+   Local Fixpoint loop_inline n (d : 𝔻 n) (b : btwn (Dtest ∧₁ Q) s n) : sig (ℙost s) :=
+     let t := 𝔻_π₁ d in
+-    let (k, Hk) := f n t in
++    let (k, Hk) := f n ⌊t⌋ᵤ in
+     let te := match k return F _ k → _ with
+               | 0   => λ e, left e
+               | S k => λ e, right ⟪_,e⟫ₚ
+@@ -73,7 +73,7 @@ Section umin_compute.
+   (* Easy program transformation: the intermediate te is bypassed *)
+   Local Fixpoint loop_opt n (d : 𝔻 n) (b : btwn (Dtest ∧₁ Q) s n) : sig (ℙost s) :=
+     let t := 𝔻_π₁ d in
+-    let (k, Hk) := f n t in
++    let (k, Hk) := f n ⌊t⌋ᵤ in
+     match k return F _ k → _ with
+     | 0   => λ e, ⟪n, ⟨t,e, b⟩ₚ⟫
+     | S k => λ e, loop_opt (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟨t, ⟪_,e⟫ₚ⟩ₚ)
+@@ -97,7 +97,7 @@ Section umin_compute.
+   (* The Let before the Fixpoint below forces the inlining of loop inside
+      linear_search *)
+   Let Fixpoint loop n (d : 𝔻 n) (b : btwn (pos_at F) s n) : sig (umin F s) :=
+-    let (k,Hk) := f n (𝔻_π₁ d) in
++    let (k,Hk) := f n ⌊𝔻_π₁ d⌋ᵤ in
+     match k return F _ k → _ with
+     | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
+     | S _ => λ e, loop (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
+@@ -132,7 +132,7 @@ Section umin₀_compute.
+ 
+   Variable (F : nat → nat → Prop)
+            (Ffun : functional F)
+-           (f : ∀n, computable (F n)).
++           (f : ∀n, computableᵤ (F n)).
+ 
+   Definition umin₀_compute : computable (umin₀ F) :=
+     sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
