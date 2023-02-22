@@ -137,7 +137,7 @@ computableᵤ {X} (P : X → Prop) := {_ : unit | ∃x, P x} → {x | P x}
 at some selected points in the code, those where some
 parameter of a higher order function is a partial
 function itself. Notice that the termination certificate
-`ex P` is now hidden under a _supplementary argument_ of type
+`∃x, P x` is now hidden under a _supplementary argument_ of type
 `unit` which is then extracted in place of (the squashed 
 proof of) the proposition `P`.
 
@@ -145,15 +145,15 @@ The `hide` trick replaces `computable` (as above) with the following
 alternative
 
 ```
-.... : ∀ p : {n | ∃x, F n x}, {x | F (π₁ p) x}
+.... : ∀ p : {a | ∃x, F a x}, {x | F (π₁ p) x}
 ```
 
 choosing one of the existing computational arguments to hide 
 the termination certificate under it. In particular this
-requires the certificate to be hidden after the argument
+requires the certificate to be hidden _after_ the arguments
 it depends on, but also that such a computational argument
-exists, hence `F` is of type `F : A → X → Prop` whereas `P`
-above is of type `P : X → Prop`.
+(eg `a` above) exists, hence `F` is of type `F : A → X → Prop` 
+whereas `P` above is of type `P : X → Prop`.
 
 # What is the output of extraction
 
