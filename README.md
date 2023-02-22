@@ -15,12 +15,16 @@ This artifact contains the Coq code closely associated with submission
 to the _International Conference on Interactive Theorem Proving_ 
 [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
 
-     "Proof pearl: faithful computation and extraction of µ-recursive algorithms in Coq"
+<div align="center">
+<i>Proof pearl: faithful computation and extraction of µ-recursive algorithms in Coq</i>
+
+by [Dominique Larchey-Wendling](http://www.loria.fr/~larchey) and [Jean François-Monin](http://www-verimag.imag.fr/~monin)
+</div>
 
 The code in this GitHub repository is distributed under the
 [`CeCILL v2.1` open source software license](Licence_CeCILL_V2.1-en.txt).
 
-# What is in there
+# What is in here
 
 This artifact consists, in the sub-directory [`theories`](theories):
 + a `makefile`, generating a well suited `Makefile.coq` from;
@@ -36,7 +40,7 @@ the difference between the three branches of the source code:
   branches/PR, discussed in the Extraction section of the paper, and which explore
   ways to get the cleanest possible OCaml extraction.
 
-# How to compile et review
+# How to compile and review
 
 ## Which Coq version
   
