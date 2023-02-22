@@ -3,7 +3,7 @@
 (*   Copyright Dominique Larchey-Wendling    [*]              *)
 (*             Jean-François Monin           [+]              *)
 (*                                                            *)
-(*           [*] Affiliation LORIA - CNRS                     *)
+(*           [*] Affiliation Univ. Lorraine - CNRS - LORIA    *)
 (*           [+] Affiliation VERIMAG - Univ. Grenoble Alpes   *)
 (**************************************************************)
 (*      This file is distributed under the terms of the       *)
@@ -15,12 +15,16 @@ This artifact contains the Coq code closely associated with submission
 to the _International Conference on Interactive Theorem Proving_ 
 [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
 
-     "Proof pearl: faithful computation and extraction of µ-recursive algorithms in Coq"
+<div align="center">
+<i>Proof pearl: faithful computation and extraction of µ-recursive algorithms in Coq</i>
+
+by [Dominique Larchey-Wendling](http://www.loria.fr/~larchey) and [Jean François-Monin](http://www-verimag.imag.fr/~monin)
+</div>
 
 The code in this GitHub repository is distributed under the
 [`CeCILL v2.1` open source software license](Licence_CeCILL_V2.1-en.txt).
 
-# What it is there
+# What is in here
 
 This artifact consists, in the sub-directory [`theories`](theories):
 + a `makefile`, generating a well suited `Makefile.coq` from;
@@ -36,7 +40,7 @@ the difference between the three branches of the source code:
   branches/PR, discussed in the Extraction section of the paper, and which explore
   ways to get the cleanest possible OCaml extraction.
 
-# How to compile et review
+# How to compile and review
 
 ## Which Coq version
   
@@ -110,7 +114,7 @@ and then switch between branches using the regular (eg)
 with `git checkout` should be avoided since they both 
 transform the code without synchronizing between each other.
 
-## What are the `unit` and `hide` branches
+# What are the [`unit`](https://github.com/DmxLarchey/Murec_Extraction/pull/1) and [`hide`](https://github.com/DmxLarchey/Murec_Extraction/pull/2) branches/PR
 
 The tricks are described in the paper. Here we give a
 short overview. They are designed to remove the `Obj.t`
@@ -121,19 +125,19 @@ compared to that of Coq.
 The `unit` trick consists in replacing 
 
 ```
-computable {X} (P : X → Prop) := ex P → sig P
+computable {X} (P : X → Prop) := (∃x, P x) → {x | P x}
 ```
 
 with
 
 ```
-computableᵤ {X} (P : X → Prop) := {_ : unit | ex P} → sig P
+computableᵤ {X} (P : X → Prop) := {_ : unit | ∃x, P x} → {x | P x}
 ```
 
 at some selected points in the code, those where some
 parameter of a higher order function is a partial
 function itself. Notice that the termination certificate
-`ex P` is now hidden under a _supplementary argument_ of type
+`∃x, P x` is now hidden under a _supplementary argument_ of type
 `unit` which is then extracted in place of (the squashed 
 proof of) the proposition `P`.
 
@@ -141,14 +145,15 @@ The `hide` trick replaces `computable` (as above) with the following
 alternative
 
 ```
-.... : ∀ p : { x | ex (P n) }, sig (P (π₁ p))
+.... : ∀ p : {a | ∃x, F a x}, {x | F (π₁ p) x}
 ```
 
 choosing one of the existing computational arguments to hide 
 the termination certificate under it. In particular this
-requires the certificate to be hidden after the argument
+requires the certificate to be hidden _after_ the arguments
 it depends on, but also that such a computational argument
-exists.
+(eg `a` above) exists, hence `F` is of type `F : A → X → Prop` 
+whereas `P` above is of type `P : X → Prop`.
 
 # What is the output of extraction
 
