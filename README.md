@@ -125,13 +125,13 @@ compared to that of Coq.
 The `unit` trick consists in replacing 
 
 ```
-computable {X} (P : X → Prop) := ex P → sig P
+computable {X} (P : X → Prop) := (∃x, P x) → {x | P x}
 ```
 
 with
 
 ```
-computableᵤ {X} (P : X → Prop) := {_ : unit | ex P} → sig P
+computableᵤ {X} (P : X → Prop) := {_ : unit | ∃x, P x} → {x | P x}
 ```
 
 at some selected points in the code, those where some
@@ -145,14 +145,15 @@ The `hide` trick replaces `computable` (as above) with the following
 alternative
 
 ```
-.... : ∀ p : { x | ex (P n) }, sig (P (π₁ p))
+.... : ∀ p : {n | ∃x, F n x}, {x | F (π₁ p) x}
 ```
 
 choosing one of the existing computational arguments to hide 
 the termination certificate under it. In particular this
 requires the certificate to be hidden after the argument
 it depends on, but also that such a computational argument
-exists.
+exists, hence `F` is of type `F : A → X → Prop` whereas `P`
+above is of type `P : X → Prop`.
 
 # What is the output of extraction
 
