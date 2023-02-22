@@ -20,7 +20,7 @@ to the _International Conference on Interactive Theorem Proving_
 The code in this GitHub repository is distributed under the
 [`CeCILL v2.1` open source software license](Licence_CeCILL_V2.1-en.txt).
 
-# What it is there
+# What is in there
 
 This artifact consists, in the sub-directory [`theories`](theories):
 + a `makefile`, generating a well suited `Makefile.coq` from;
@@ -110,7 +110,7 @@ and then switch between branches using the regular (eg)
 with `git checkout` should be avoided since they both 
 transform the code without synchronizing between each other.
 
-## What are the `unit` and `hide` branches
+# What are the `unit` and `hide` branches
 
 The tricks are described in the paper. Here we give a
 short overview. They are designed to remove the `Obj.t`
