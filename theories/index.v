@@ -2,7 +2,7 @@
 (*   Copyright Dominique Larchey-Wendling    [*]              *)
 (*             Jean-François Monin           [+]              *)
 (*                                                            *)
-(*           [*] Affiliation LORIA - CNRS                     *)
+(*           [*] Affiliation Univ. Lorraine - CNRS - LORIA    *)
 (*           [+] Affiliation VERIMAG - Univ. Grenoble Alpes   *)
 (**************************************************************)
 (*      This file is distributed under the terms of the       *)
