@@ -17,7 +17,7 @@ Section vec_map_compute.
 
   Variables (X Y : Type)
             (F : X → Y → Prop)
-            (f : ∀ x, computable (F x)).
+            (f : ∀ p : { x | ex (F x) }, sig (F (π₁ p))).
 
   Section vec_map_compute_props.
 
@@ -41,7 +41,7 @@ Section vec_map_compute.
     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
       match v with
       | ⟨⟩    => λ _,   ⟪⟨⟩, vmc_PO1⟫
-      | x ∷ v => λ Fxv, let (y, x_y) := f x (Fxv 𝕆) in
+      | x ∷ v => λ Fxv, let (y, x_y) := f ⟪x,Fxv 𝕆⟫ in
                         let (w, v_w) := loop v (λ i, Fxv (𝕊 i)) in
                         ⟪y ∷ w, vmc_PO2 x_y v_w⟫
       end in
@@ -49,5 +49,5 @@ Section vec_map_compute.
 
 End vec_map_compute.
 
-Arguments vec_map_compute {_ _ _} _ {n} v.
+Arguments vec_map_compute {_ _} _ _ {n} v.
 
