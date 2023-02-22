@@ -15,3 +15,6 @@ From Coq Require Import Utf8.
     can be computed out of a proof of inhabitation *)
 
 Definition computable {X} (P : X → Prop) := ex P → sig P.
+Definition computable_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
+
+Notation computableᵤ := computable_unit.

@@ -67,7 +67,7 @@ Section recalg_coq.
     | ra_zero         => Zr_compute
     | ra_succ         => Sc_compute
     | ra_proj i       => Id_compute i
-    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ Sa, ⟦Sa⟧ₒ Va) Sab cVa)
+    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ Sa cSa, ⟦Sa⟧ₒ Va (πᵤ cSa)) Sab cVa)
     | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
     | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
     end
@@ -112,6 +112,9 @@ Extraction Inline vec_S_inv.
 Extraction Inline sig_monotonic comp reify.
 Extraction Inline umin₀_compute.
 Extraction Inline Id_compute Zr_compute Sc_compute Pr_compute Mn_compute Cn_compute.
+
+(* unit is extracted as unit () *)
+Extract Inductive unit => "unit" [ "()" ].
 
 (* indices extracted as (unbounded) nat *)
 Extract Inductive idx => "nat" [ "O" "S" ].

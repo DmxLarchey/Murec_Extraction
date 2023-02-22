@@ -17,7 +17,7 @@ Section vec_dmap.
 
   Variables (X Y : Type)
             (F : X → Y → Prop)
-            (f : ∀ x, computable (F x)).
+            (f : ∀ x, computableᵤ (F x)).
 
   Section vec_map_compute_props.
 
@@ -39,7 +39,7 @@ Section vec_dmap.
     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
       match v with
       | ⟨⟩    => λ _,   ⟪⟨⟩, vdm_PO1⟫
-      | x ∷ v => λ hxv, let (y, hy) := f x (hxv 𝕆) in
+      | x ∷ v => λ hxv, let (y, hy) := f x ⌊hxv 𝕆⌋ᵤ in
                         let (w, hw) := loop v (λ i, hxv (𝕊 i)) in
                         ⟪y ∷ w, vdm_PO2 hy hw⟫
       end in
