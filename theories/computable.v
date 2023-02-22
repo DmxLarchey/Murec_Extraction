@@ -14,7 +14,7 @@ From Coq Require Import Utf8.
 From MuRec Require Import sigma schemes index vec recalg recalg_semantics.
 From MuRec Require Export computable_def map_compute prim_rec_compute umin_compute.
 
-Definition Zr_compute V1 : computable (Zr V1) := λ _, ⟪0,eq_refl⟫.
+Definition Zr_compute V1 : computable (Zr V1) := λ _, ⟪0, eq_refl⟫.
 Definition Sc_compute : ∀V1, computable (Sc V1) := vec_S_inv (λ x _ _, ⟪S x, eq_refl⟫).
 Definition Id_compute {a} (i : idx a) Va : computable (Id i Va) := λ _, ⟪Va.[i], eq_refl⟫.
 
@@ -24,16 +24,16 @@ Section Cn_compute.
             (Sb : recalg b)
             (cSb : ∀Vb, computable (⟦Sb⟧ Vb))
             (Sab : vec (recalg a) b)
-            (cSab : ∀Va, computable (λ w, ∀i, ⟦Sab.[i]⟧ Va w.[i])).
+            (cSab : ∀Va, computable (λ Vb, ∀i, ⟦Sab.[i]⟧ Va Vb.[i])).
 
   Section Cn_props.
 
     Variables (Va : vec nat a) (cVa : ex (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va)).
 
-    Local Fact Cn_p1 : ∃w, ∀i, ⟦Sab.[i]⟧ Va w.[i].
+    Local Fact Cn_p1 : ∃Vb, ∀i, ⟦Sab.[i]⟧ Va Vb.[i].
     Proof.
-      destruct cVa as (y & Wb & H1 & H2).
-      exists Wb; intros i.
+      destruct cVa as (y & Vb & H1 & H2).
+      exists Vb; intros i.
       specialize (H2 i).
       now rewrite vec_prj_map in H2.
     Qed.
@@ -66,9 +66,9 @@ Section Cn_compute.
   Arguments Cn_p3 {_} {_} _ {_}.
 
   Definition Cn_compute : ∀Va, computable (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
-    λ Va cVa, let (w,cw) := cSab Va (Cn_p1 cVa) in
-              let (y,cy) := cSb w (Cn_p2 cVa cw) in
-              ⟪y, Cn_p3 cw cy⟫.
+    λ Va cVa, let (Vb,cVb) := cSab Va (Cn_p1 cVa) in
+              let (y,cy)   := cSb Vb (Cn_p2 cVa cVb) in
+              ⟪y, Cn_p3 cVb cy⟫.
 
 End Cn_compute.
 
