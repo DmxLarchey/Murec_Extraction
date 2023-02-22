@@ -24,9 +24,11 @@ Section vec_map_compute.
     Local Fact vmc_PO1 i : F ⟨⟩.[i] ⟨⟩.[i].
     Proof. destruct (idx_inv i). Qed.
 
-    Variables (x : X) (n : nat) (v : vec X n) (y : Y) (w : vec Y n)
-              (Fx : F x y)
-              (Fv : ∀ i, F v.[i] w.[i]).
+    Variables (n : nat)
+              (x : X) (v : vec X n)
+              (y : Y) (w : vec Y n)
+              (Fxy : F x y)
+              (Fvw : ∀ i, F v.[i] w.[i]).
 
     Local Fact vmc_PO2 i : F (x ∷ v).[i] (y ∷ w).[i].
     Proof. now destruct (idx_inv i); cbn. Qed.
@@ -39,11 +41,11 @@ Section vec_map_compute.
     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
       match v with
       | ⟨⟩    => λ _,   ⟪⟨⟩, vmc_PO1⟫
-      | x ∷ v => λ hxv, let (y, hy) := f x (hxv 𝕆) in
-                        let (w, hw) := loop v (λ i, hxv (𝕊 i)) in
-                        ⟪y ∷ w, vmc_PO2 hy hw⟫
+      | x ∷ v => λ Fxv, let (y, x_y) := f x (Fxv 𝕆) in
+                        let (w, v_w) := loop v (λ i, Fxv (𝕊 i)) in
+                        ⟪y ∷ w, vmc_PO2 x_y v_w⟫
       end in
-    λ n v hv, loop v (λ i, let (w, hw) := hv in ⟪w.[i], hw i⟫ₚ).
+    λ n v Fv, loop v (let (w, Fvw) := Fv in λ i, ⟪w.[i], Fvw i⟫ₚ).
 
 End vec_map_compute.
 
