@@ -114,7 +114,7 @@ and then switch between branches using the regular (eg)
 with `git checkout` should be avoided since they both 
 transform the code without synchronizing between each other.
 
-# What are the `unit` and `hide` branches
+# What are the [`unit`](https://github.com/DmxLarchey/Murec_Extraction/pull/1) and [`hide`](https://github.com/DmxLarchey/Murec_Extraction/pull/2) branches/PR
 
 The tricks are described in the paper. Here we give a
 short overview. They are designed to remove the `Obj.t`
