@@ -16,7 +16,8 @@ to the _International Conference on Interactive Theorem Proving_
 [(ITP 2023)](https://mizar.uwb.edu.pl/ITP2023/).
 
 <div align="center">
-<i>Proof pearl: faithful computation and extraction of µ-recursive algorithms in Coq</i>
+<a href="https://members.loria.fr/DLarchey/files/papers/ITP_2023_paper_58.pdf">
+<i>Proof pearl: faithful computation and extraction of µ-recursive algorithms in Coq</i></a>
 
 by [Dominique Larchey-Wendling](http://www.loria.fr/~larchey) and [Jean François-Monin](http://www-verimag.imag.fr/~monin)
 </div>

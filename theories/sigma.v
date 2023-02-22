@@ -13,11 +13,11 @@ From Coq Require Import Utf8.
 
 (* Notation for proofs of the propositional Σ-type "∃x, P x", ie "ex P", for P : X → Prop *)
 
-Notation "⟪ x , h ⟫ₚ" := (ex_intro _ x h) (at level 0, format "⟪ x , h ⟫ₚ").
+Notation "⟪ x , h ⟫ₚ" := (ex_intro _ x h) (at level 0, format "⟪ x ,  h ⟫ₚ").
 
 (* Notations for terms of the Σ-type "{ x : X | P x }", ie "sig P", for P : X → Prop *)
 
-Notation "⟪ x , h ⟫" := (exist _ x h) (at level 0, format "⟪ x , h ⟫").
+Notation "⟪ x , h ⟫" := (exist _ x h) (at level 0, format "⟪ x ,  h ⟫").
 Notation π₁ := proj1_sig.
 Notation π₂ := proj2_sig.
 
