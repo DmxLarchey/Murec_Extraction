@@ -59,7 +59,7 @@ Section prec_compute.
       | 0   => λ e, Fcomp ⟪x,e⟫
       | S n => λ e, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 e) in
                     let (yn', yn_yn') := Gcomp x n ⟪yn,prc_TC2 e y_yn⟫ in
-                    ⟪yn',prc_PO1 y_yn yn_yn'⟫
+                    ⟪yn', prc_PO1 y_yn yn_yn'⟫
     end.
 
 End prec_compute.
