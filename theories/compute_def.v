@@ -11,10 +11,11 @@
 
 From Coq Require Import Utf8.
 
-(** A predicate is computable if a value
-    can be computed out of a proof of inhabitation *)
+(** A predicate "computes" if a value in it can be computed 
+    using of a proof of its inhabitation has termination
+    certificate *)
 
-Definition computable {X} (P : X → Prop) := ex P → sig P.
-Definition computable_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
+Definition compute {X} (P : X → Prop) := ex P → sig P.
+Definition compute_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
 
-Notation computableᵤ := computable_unit.
+Notation computeᵤ := compute_unit.
