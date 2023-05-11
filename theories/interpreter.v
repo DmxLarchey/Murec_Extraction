@@ -12,7 +12,7 @@
 From Coq Require Import Utf8 Extraction.
 
 From MuRec Require Import sigma relations arith_mini index vec
-                          recalg recalg_semantics computable.
+                          recalg recalg_semantics compute.
 
 Reserved Notation " '⟦' f '⟧ₒ' " (at level 1, format "⟦ f ⟧ₒ").
 
@@ -25,7 +25,7 @@ Section recalg_coq.
      of the algorithm Sa as a combination of µ-recursive
      schemes *)
 
-  (* We show that the graph ⟦Sa⟧ is computable for any
+  (* We show that the graph ⟦Sa⟧ computes for any
      Sa : recalg a, ie it can be reified into a Coq term
 
          ∀Va : vec nat a, ex (⟦Sa⟧ Va) → sig (⟦Sa⟧ Va)
@@ -62,7 +62,7 @@ Section recalg_coq.
        ra_compute and Cn_compute at Extraction, which generates
        a fresh new name like "sa0", not so nice at display *)
 
-  Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
+  Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, compute (⟦Sk⟧ Vk) :=
     match Sk with
     | ra_zero         => Zr_compute
     | ra_succ         => Sc_compute

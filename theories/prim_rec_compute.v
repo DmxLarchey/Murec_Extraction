@@ -11,17 +11,17 @@
 
 From Coq Require Import Utf8.
 
-From MuRec Require Import sigma relations schemes computable_def.
+From MuRec Require Import sigma relations schemes compute_def.
 
 Section prec_compute.
 
   Variables (X Y : Type)
             (F : X → Y → Prop)
             (Ffun : functional F)
-            (Fcomp : ∀x, computable (F x))
+            (Fcomp : ∀x, compute (F x))
             (G : X → nat → Y → Y → Prop)
             (Gfun : ∀ x n, functional (G x n))
-            (Gcomp : ∀ x n y, computable (G x n y))
+            (Gcomp : ∀ x n y, compute (G x n y))
             (x : X).
 
   Section prim_rec_compute_props.
@@ -54,7 +54,7 @@ Section prec_compute.
   Arguments prc_TC2 {_} _ {_} _.
   Arguments prc_PO1 {_ _} _ {_} _.
 
-  Fixpoint prim_rec_compute m : computable (prim_rec F G x m) :=
+  Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
     match m with
       | 0   => λ e, Fcomp x e
       | S n => λ e, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 e) in
