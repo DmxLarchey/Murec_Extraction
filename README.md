@@ -126,13 +126,13 @@ compared to that of Coq.
 The `unit` trick consists in replacing 
 
 ```
-computable {X} (P : X → Prop) := (∃x, P x) → {x | P x}
+compute {X} (P : X → Prop) := (∃x, P x) → {x | P x}
 ```
 
 with
 
 ```
-computableᵤ {X} (P : X → Prop) := {_ : unit | ∃x, P x} → {x | P x}
+computeᵤ {X} (P : X → Prop) := {_ : unit | ∃x, P x} → {x | P x}
 ```
 
 at some selected points in the code, those where some
@@ -142,7 +142,7 @@ function itself. Notice that the termination certificate
 `unit` which is then extracted in place of (the squashed 
 proof of) the proposition `P`.
 
-The `hide` trick replaces `computable` (as above) with the following
+The `hide` trick replaces `compute` (as above) with the following
 alternative
 
 ```
@@ -190,23 +190,23 @@ type recalg =
 | Ra_prec of recalg * recalg
 | Ra_umin of recalg
 
-type 'x computable = __ -> 'x
+type 'x compute = __ -> 'x
 
-(** val vec_map_compute : ('a1 -> 'a2 computable) -> 'a1 list -> 'a2 list **)
+(** val vec_map_compute : ('a1 -> 'a2 compute) -> 'a1 list -> 'a2 list **)
 
 let rec vec_map_compute fcomp = function
 | [] -> []
 | x::xa -> (fcomp x __)::(vec_map_compute fcomp xa)
 
 (** val prim_rec_compute :
-    ('a1 -> 'a2 computable) -> ('a1 -> nat -> 'a2 -> 'a2 computable) -> 'a1
+    ('a1 -> 'a2 compute) -> ('a1 -> nat -> 'a2 -> 'a2 compute) -> 'a1
     -> nat -> 'a2 **)
 
 let rec prim_rec_compute fcomp gcomp x = function
 | O -> fcomp x __
 | S n -> gcomp x n (prim_rec_compute fcomp gcomp x n) __
 
-(** val umin_compute : (nat -> nat computable) -> nat -> nat **)
+(** val umin_compute : (nat -> nat compute) -> nat -> nat **)
 
 let rec umin_compute f s =
   match f s __ with
