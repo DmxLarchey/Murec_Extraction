@@ -11,7 +11,7 @@
 
 From Coq Require Import Utf8.
 
-From MuRec Require Import sigma relations arith_mini between schemes computable_def linear_search.
+From MuRec Require Import sigma relations arith_mini between schemes compute_def linear_search.
 
 Section umin_compute.
 

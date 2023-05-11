@@ -11,7 +11,7 @@
 
 From Coq Require Import Utf8.
 
-From MuRec Require Import sigma relations index vec computable_def.
+From MuRec Require Import sigma relations index vec compute_def.
 
 Section vec_map_compute.
 

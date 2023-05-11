@@ -12,7 +12,7 @@
 From Coq Require Import Utf8.
 
 From MuRec Require Import sigma schemes index vec recalg recalg_semantics.
-From MuRec Require Export computable_def map_compute prim_rec_compute umin_compute.
+From MuRec Require Export compute_def map_compute prim_rec_compute umin_compute.
 
 Definition Zr_compute V1 : compute (Zr V1) := λ _, ⟪0, eq_refl⟫.
 Definition Sc_compute : ∀V1, compute (Sc V1) := vec_S_inv (λ x _ _, ⟪S x, eq_refl⟫).

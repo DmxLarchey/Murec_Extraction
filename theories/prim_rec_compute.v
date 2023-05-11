@@ -11,7 +11,7 @@
 
 From Coq Require Import Utf8.
 
-From MuRec Require Import sigma relations schemes computable_def.
+From MuRec Require Import sigma relations schemes compute_def.
 
 Section prec_compute.
 

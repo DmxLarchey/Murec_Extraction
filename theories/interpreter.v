@@ -12,7 +12,7 @@
 From Coq Require Import Utf8 Extraction.
 
 From MuRec Require Import sigma relations arith_mini index vec
-                          recalg recalg_semantics computable.
+                          recalg recalg_semantics compute.
 
 Reserved Notation " '⟦' f '⟧ₒ' " (at level 1, format "⟦ f ⟧ₒ").
 
