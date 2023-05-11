@@ -16,3 +16,6 @@ From Coq Require Import Utf8.
     certificate *)
 
 Definition compute {X} (P : X → Prop) := ex P → sig P.
+Definition compute_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
+
+Notation computeᵤ := compute_unit.

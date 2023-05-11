@@ -17,7 +17,7 @@ Section umin_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, compute (F n)).
+           (f : ∀n, computeᵤ (F n)).
 
   Arguments Ffun {_ _ _}.
 
@@ -43,7 +43,7 @@ Section umin_compute.
 
   (* Instanciation of test *)
   Let test n (t : Dtest n) : {P n} + {Q n} :=
-    let (k, Hk) := f n t in
+    let (k, Hk) := f n ⌊t⌋ᵤ in
     match k return F _ k → _ with
     | 0   => λ e, left e
     | S k => λ e, right ⟪k,e⟫ₚ
@@ -60,7 +60,7 @@ Section umin_compute.
   (* Inlining the current instance of test inside loop_orig *)
   Local Fixpoint loop_inline n (d : 𝔻 n) (b : btwn (Dtest ∧₁ Q) s n) : sig (ℙost s) :=
     let t := 𝔻_π₁ d in
-    let (k, Hk) := f n t in
+    let (k, Hk) := f n ⌊t⌋ᵤ in
     let te := match k return F _ k → _ with
               | 0   => λ e, left e
               | S k => λ e, right ⟪_,e⟫ₚ
@@ -73,7 +73,7 @@ Section umin_compute.
   (* Easy program transformation: the intermediate te is bypassed *)
   Local Fixpoint loop_opt n (d : 𝔻 n) (b : btwn (Dtest ∧₁ Q) s n) : sig (ℙost s) :=
     let t := 𝔻_π₁ d in
-    let (k, Hk) := f n t in
+    let (k, Hk) := f n ⌊t⌋ᵤ in
     match k return F _ k → _ with
     | 0   => λ e, ⟪n, ⟨t,e, b⟩ₚ⟫
     | S k => λ e, loop_opt (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟨t, ⟪_,e⟫ₚ⟩ₚ)
@@ -97,7 +97,7 @@ Section umin_compute.
   (* The Let before the Fixpoint below forces the inlining of loop inside
      linear_search *)
   Let Fixpoint loop n (d : 𝔻 n) (b : btwn (pos_at F) s n) : sig (umin F s) :=
-    let (k,Hk) := f n (𝔻_π₁ d) in
+    let (k,Hk) := f n ⌊𝔻_π₁ d⌋ᵤ in
     match k return F _ k → _ with
     | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
     | S _ => λ e, loop (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
@@ -132,7 +132,7 @@ Section umin₀_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, compute (F n)).
+           (f : ∀n, computeᵤ (F n)).
 
   Definition umin₀_compute : compute (umin₀ F) :=
     sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
