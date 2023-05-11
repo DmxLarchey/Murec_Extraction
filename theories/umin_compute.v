@@ -17,7 +17,7 @@ Section umin_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, computable (F n)).
+           (f : ∀n, compute (F n)).
 
   Arguments Ffun {_ _ _}.
 
@@ -42,7 +42,7 @@ Section umin_compute.
   (* The algorithm below can be derived from the one in linear_search.v.
      umin F s, that is ze_at F ∧₁ btwn (pos_at F) s, is at the same time the
      pre and the post-condition of the intended algorithm (umin_compute), by
-     the definition of computable.
+     the definition of compute.
      It is also an opportunistic version of ℙost.
      See umin_compute_details.v for details. *)
   (* ---------------------------------------------------------------------- *)
@@ -71,7 +71,7 @@ Section umin_compute.
     - apply pos_at_def_at.
   Qed.
 
-  Definition umin_compute : computable (umin F s) :=
+  Definition umin_compute : compute (umin F s) :=
     linear_search  ∘  ex_monotonic umin_ℙre.
 
 End umin_compute.
@@ -82,9 +82,9 @@ Section umin₀_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, computable (F n)).
+           (f : ∀n, compute (F n)).
 
-  Definition umin₀_compute : computable (umin₀ F) :=
+  Definition umin₀_compute : compute (umin₀ F) :=
     sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
 
 End umin₀_compute.

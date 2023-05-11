@@ -17,7 +17,7 @@ Section vec_map_compute.
 
   Variables (X Y : Type)
             (F : X → Y → Prop)
-            (f : ∀ x, computable (F x)).
+            (f : ∀ x, compute (F x)).
 
   Section vec_map_compute_props.
 
@@ -37,7 +37,7 @@ Section vec_map_compute.
 
   Arguments vmc_PO2 {_ _ _ _ _}.
 
-  Definition vec_map_compute : ∀{n} (v : vec X n), computable (λ w, ∀i, F v.[i] w.[i]) :=
+  Definition vec_map_compute : ∀{n} (v : vec X n), compute (λ w, ∀i, F v.[i] w.[i]) :=
     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
       match v with
       | ⟨⟩    => λ _,   ⟪⟨⟩, vmc_PO1⟫
