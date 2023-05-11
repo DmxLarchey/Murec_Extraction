@@ -1,44 +1,169 @@
-diff --git a/theories/computable.v b/theories/computable.v
-index 8fe7161..38f24b2 100644
---- a/theories/computable.v
-+++ b/theories/computable.v
-@@ -83,9 +83,9 @@ Section Pr_compute.
-   Definition Pr_compute : ∀Va', computable (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
-     vec_S_inv (λ z Va,
-       prim_rec_compute (ra_sem_fun _)
+diff --git a/theories/compute.v b/theories/compute.v
+deleted file mode 100644
+index d2b48b6..0000000
+--- a/theories/compute.v
++++ /dev/null
+@@ -1,107 +0,0 @@
+-(**************************************************************)
+-(*   Copyright Dominique Larchey-Wendling    [*]              *)
+-(*             Jean-François Monin           [+]              *)
+-(*                                                            *)
+-(*           [*] Affiliation Univ. Lorraine - CNRS - LORIA    *)
+-(*           [+] Affiliation VERIMAG - Univ. Grenoble Alpes   *)
+-(**************************************************************)
+-(*      This file is distributed under the terms of the       *)
+-(*        CeCILL v2.1 FREE SOFTWARE LICENSE AGREEMENT         *)
+-(**************************************************************)
+-
+-From Coq Require Import Utf8.
+-
+-From MuRec Require Import sigma schemes index vec recalg recalg_semantics.
+-From MuRec Require Export compute_def map_compute prim_rec_compute umin_compute.
+-
+-Definition Zr_compute V1 : compute (Zr V1) := λ _, ⟪0, eq_refl⟫.
+-Definition Sc_compute : ∀V1, compute (Sc V1) := vec_S_inv (λ x _ _, ⟪S x, eq_refl⟫).
+-Definition Id_compute {a} (i : idx a) Va : compute (Id i Va) := λ _, ⟪Va.[i], eq_refl⟫.
+-
+-Section Cn_compute.
+-
+-  Variables (a b : nat)
+-            (Sb : recalg b)
+-            (cSb : ∀Vb, compute (⟦Sb⟧ Vb))
+-            (Sab : vec (recalg a) b)
+-            (cSab : ∀Va, compute (λ Vb, ∀i, ⟦Sab.[i]⟧ Va Vb.[i])).
+-
+-  Section Cn_props.
+-
+-    Variables (Va : vec nat a) (cVa : ex (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va)).
+-
+-    Local Fact Cn_p1 : ∃Vb, ∀i, ⟦Sab.[i]⟧ Va Vb.[i].
+-    Proof.
+-      destruct cVa as (y & Vb & H1 & H2).
+-      exists Vb; intros i.
+-      specialize (H2 i).
+-      now rewrite vec_prj_map in H2.
+-    Qed.
+-
+-    Variables (Vb : vec nat b) (HVb : ∀i, ⟦Sab.[i]⟧ Va Vb.[i]).
+-
+-    Fact Cn_p2 : ∃y, ⟦Sb⟧ Vb y.
+-    Proof.
+-      destruct cVa as (y & Wb & H1 & H2).
+-      exists y.
+-      replace Vb with Wb; trivial.
+-      apply vec_prj_ext; intros i.
+-      specialize (H2 i); specialize (HVb i).
+-      rewrite vec_prj_map in H2.
+-      revert H2 HVb; apply ra_sem_fun.
+-    Qed.
+-
+-    Variables (y : nat) (Hy : ⟦Sb⟧ Vb y).
+-
+-    Fact Cn_p3 : ⟦ra_comp Sb Sab⟧ Va y.
+-    Proof.
+-      exists Vb; refine (conj Hy _).
+-      intro; now rewrite vec_prj_map.
+-    Qed.
+-
+-  End Cn_props.
+-
+-  Arguments Cn_p1 {_}.
+-  Arguments Cn_p2 {_} _ {_} _.
+-  Arguments Cn_p3 {_} {_} _ {_}.
+-
+-  Definition Cn_compute : ∀Va, compute (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
+-    λ Va cVa, let (Vb,cVb) := cSab Va (Cn_p1 cVa) in
+-              let (y,cy)   := cSb Vb (Cn_p2 cVa cVb) in
+-              ⟪y, Cn_p3 cVb cy⟫.
+-
+-End Cn_compute.
+-
+-Arguments Cn_compute {a b Sb} _ {Sab} _.
+-
+-Section Pr_compute.
+-
+-  Variables (a : nat)
+-            (Sa : recalg a)       (cSa : ∀Va, compute (⟦Sa⟧ Va))
+-            (Sa'' : recalg (2+a)) (cSa'' : ∀Va'', compute (⟦Sa''⟧ Va'')).
+-
+-  Definition Pr_compute : ∀Va', compute (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
+-    vec_S_inv (λ z Va,
+-      prim_rec_compute (ra_sem_fun _)
 -                       (λ V cV, cSa V cV)
-+                       (λ V cV, cSa V (πᵤ cV))
-                        (λ _ _ _, ra_sem_fun _ _)
+-                       (λ _ _ _, ra_sem_fun _ _)
 -                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) cVnx)
-+                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) (πᵤ cVnx))
-                        Va
-                        z
-     ).
-@@ -100,7 +100,7 @@ Section Mn_compute.
- 
-   Definition Mn_compute Va : computable (Mn ⟦Sa'⟧ Va) :=
-     umin₀_compute (λ _, ra_sem_fun _ _)
+-                       Va
+-                       z
+-    ).
+-
+-End Pr_compute.
+-
+-Arguments Pr_compute {a} {Sa} cSa {Sa''} cSa''.
+-
+-Section Mn_compute.
+-
+-  Variables (a : nat) (Sa' : recalg (1+a)) (cSa' : ∀Va', compute (⟦Sa'⟧ Va')).
+-
+-  Definition Mn_compute Va : compute (Mn ⟦Sa'⟧ Va) :=
+-    umin₀_compute (λ _, ra_sem_fun _ _)
 -                  (λ n cn, cSa' (n ∷ Va) cn).
-+                  (λ n cn, cSa' (n ∷ Va) (πᵤ cn)).
- 
- End Mn_compute.
- 
-diff --git a/theories/computable_def.v b/theories/computable_def.v
-index c860379..8b2418c 100644
---- a/theories/computable_def.v
-+++ b/theories/computable_def.v
-@@ -15,3 +15,6 @@ From Coq Require Import Utf8.
-     can be computed out of a proof of inhabitation *)
- 
- Definition computable {X} (P : X → Prop) := ex P → sig P.
-+Definition computable_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
-+
-+Notation computableᵤ := computable_unit.
+-
+-End Mn_compute.
+-
+-Arguments Mn_compute {a} {Sa'} cSa'.
+diff --git a/theories/compute_def.v b/theories/compute_def.v
+deleted file mode 100644
+index 6389fd8..0000000
+--- a/theories/compute_def.v
++++ /dev/null
+@@ -1,18 +0,0 @@
+-(**************************************************************)
+-(*   Copyright Dominique Larchey-Wendling    [*]              *)
+-(*             Jean-François Monin           [+]              *)
+-(*                                                            *)
+-(*           [*] Affiliation Univ. Lorraine - CNRS - LORIA    *)
+-(*           [+] Affiliation VERIMAG - Univ. Grenoble Alpes   *)
+-(**************************************************************)
+-(*      This file is distributed under the terms of the       *)
+-(*        CeCILL v2.1 FREE SOFTWARE LICENSE AGREEMENT         *)
+-(**************************************************************)
+-
+-From Coq Require Import Utf8.
+-
+-(** A predicate "computes" if a value in it can be computed 
+-    using of a proof of its inhabitation has termination
+-    certificate *)
+-
+-Definition compute {X} (P : X → Prop) := ex P → sig P.
 diff --git a/theories/interpreter.v b/theories/interpreter.v
-index 1da0919..d19436e 100644
+index cf4fc91..d19436e 100644
 --- a/theories/interpreter.v
 +++ b/theories/interpreter.v
-@@ -67,7 +67,7 @@ Section recalg_coq.
+@@ -12,7 +12,7 @@
+ From Coq Require Import Utf8 Extraction.
+ 
+ From MuRec Require Import sigma relations arith_mini index vec
+-                          recalg recalg_semantics compute.
++                          recalg recalg_semantics computable.
+ 
+ Reserved Notation " '⟦' f '⟧ₒ' " (at level 1, format "⟦ f ⟧ₒ").
+ 
+@@ -25,7 +25,7 @@ Section recalg_coq.
+      of the algorithm Sa as a combination of µ-recursive
+      schemes *)
+ 
+-  (* We show that the graph ⟦Sa⟧ computes for any
++  (* We show that the graph ⟦Sa⟧ is computable for any
+      Sa : recalg a, ie it can be reified into a Coq term
+ 
+          ∀Va : vec nat a, ex (⟦Sa⟧ Va) → sig (⟦Sa⟧ Va)
+@@ -62,12 +62,12 @@ Section recalg_coq.
+        ra_compute and Cn_compute at Extraction, which generates
+        a fresh new name like "sa0", not so nice at display *)
+ 
+-  Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, compute (⟦Sk⟧ Vk) :=
++  Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, computable (⟦Sk⟧ Vk) :=
+     match Sk with
      | ra_zero         => Zr_compute
      | ra_succ         => Sc_compute
      | ra_proj i       => Id_compute i
@@ -91,19 +216,31 @@ index 2cb83fd..c233849 100644
      | right q => loop (S n) (𝔻ls_π₂ d q) (btwn_next b ⟨t,q⟩ₚ)
      end.
 diff --git a/theories/map_compute.v b/theories/map_compute.v
-index cea7ec5..31036bf 100644
+index 4081d24..31036bf 100644
 --- a/theories/map_compute.v
 +++ b/theories/map_compute.v
-@@ -17,7 +17,7 @@ Section vec_map_compute.
+@@ -11,13 +11,13 @@
+ 
+ From Coq Require Import Utf8.
+ 
+-From MuRec Require Import sigma relations index vec compute_def.
++From MuRec Require Import sigma relations index vec computable_def.
+ 
+ Section vec_map_compute.
  
    Variables (X Y : Type)
              (F : X → Y → Prop)
--            (f : ∀ x, computable (F x)).
+-            (f : ∀ x, compute (F x)).
 +            (f : ∀ x, computableᵤ (F x)).
  
    Section vec_map_compute_props.
  
-@@ -41,7 +41,7 @@ Section vec_map_compute.
+@@ -37,11 +37,11 @@ Section vec_map_compute.
+ 
+   Arguments vmc_PO2 {_ _ _ _ _}.
+ 
+-  Definition vec_map_compute : ∀{n} (v : vec X n), compute (λ w, ∀i, F v.[i] w.[i]) :=
++  Definition vec_map_compute : ∀{n} (v : vec X n), computable (λ w, ∀i, F v.[i] w.[i]) :=
      let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
        match v with
        | ⟨⟩    => λ _,   ⟪⟨⟩, vmc_PO1⟫
@@ -113,25 +250,36 @@ index cea7ec5..31036bf 100644
                          ⟪y ∷ w, vmc_PO2 x_y v_w⟫
        end in
 diff --git a/theories/prim_rec_compute.v b/theories/prim_rec_compute.v
-index cf213ba..c68fbde 100644
+index 1fb7ffe..c68fbde 100644
 --- a/theories/prim_rec_compute.v
 +++ b/theories/prim_rec_compute.v
-@@ -18,10 +18,10 @@ Section prec_compute.
+@@ -11,17 +11,17 @@
+ 
+ From Coq Require Import Utf8.
+ 
+-From MuRec Require Import sigma relations schemes compute_def.
++From MuRec Require Import sigma relations schemes computable_def.
+ 
+ Section prec_compute.
+ 
    Variables (X Y : Type)
              (F : X → Y → Prop)
              (Ffun : functional F)
--            (Fcomp : ∀x, computable (F x))
+-            (Fcomp : ∀x, compute (F x))
 +            (Fcomp : ∀x, computableᵤ (F x))
              (G : X → nat → Y → Y → Prop)
              (Gfun : ∀ x n, functional (G x n))
--            (Gcomp : ∀ x n y, computable (G x n y))
+-            (Gcomp : ∀ x n y, compute (G x n y))
 +            (Gcomp : ∀ x n y, computableᵤ (G x n y))
              (x : X).
  
    Section prim_rec_compute_props.
-@@ -56,9 +56,9 @@ Section prec_compute.
+@@ -54,11 +54,11 @@ Section prec_compute.
+   Arguments prc_TC2 {_} _ {_} _.
+   Arguments prc_PO1 {_ _} _ {_} _.
  
-   Fixpoint prim_rec_compute m : computable (prim_rec F G x m) :=
+-  Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
++  Fixpoint prim_rec_compute m : computable (prim_rec F G x m) :=
      match m with
 -      | 0   => λ e, Fcomp x e
 +      | 0   => λ e, Fcomp x ⌊e⌋ᵤ
@@ -156,18 +304,34 @@ index 84c46a6..fa53c52 100644
    λ df, exist (λ f, ∀ x, P x (f x)) (λ x, π₁ (df x)) (λ x, π₂ (df x)).
  
 diff --git a/theories/umin_compute.v b/theories/umin_compute.v
-index 23ab391..762d487 100644
+index 60b2a16..762d487 100644
 --- a/theories/umin_compute.v
 +++ b/theories/umin_compute.v
-@@ -17,7 +17,7 @@ Section umin_compute.
+@@ -11,13 +11,13 @@
+ 
+ From Coq Require Import Utf8.
+ 
+-From MuRec Require Import sigma relations arith_mini between schemes compute_def linear_search.
++From MuRec Require Import sigma relations arith_mini between schemes computable_def linear_search.
+ 
+ Section umin_compute.
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
+-           (f : ∀n, compute (F n)).
 +           (f : ∀n, computableᵤ (F n)).
  
    Arguments Ffun {_ _ _}.
  
+@@ -42,7 +42,7 @@ Section umin_compute.
+   (* The algorithm below can be derived from the one in linear_search.v.
+      umin F s, that is ze_at F ∧₁ btwn (pos_at F) s, is at the same time the
+      pre and the post-condition of the intended algorithm (umin_compute), by
+-     the definition of compute.
++     the definition of computable.
+      It is also an opportunistic version of ℙost.
+      See umin_compute_details.v for details. *)
+   (* ---------------------------------------------------------------------- *)
 @@ -50,7 +50,7 @@ Section umin_compute.
    (* The Let before the Fixpoint below forces the inlining of loop inside
       linear_search *)
@@ -177,24 +341,43 @@ index 23ab391..762d487 100644
      match k return F _ k → _ with
      | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
      | S _ => λ e, loop (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
-@@ -82,7 +82,7 @@ Section umin₀_compute.
+@@ -71,7 +71,7 @@ Section umin_compute.
+     - apply pos_at_def_at.
+   Qed.
+ 
+-  Definition umin_compute : compute (umin F s) :=
++  Definition umin_compute : computable (umin F s) :=
+     linear_search  ∘  ex_monotonic umin_ℙre.
+ 
+ End umin_compute.
+@@ -82,9 +82,9 @@ Section umin₀_compute.
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
+-           (f : ∀n, compute (F n)).
 +           (f : ∀n, computableᵤ (F n)).
  
-   Definition umin₀_compute : computable (umin₀ F) :=
+-  Definition umin₀_compute : compute (umin₀ F) :=
++  Definition umin₀_compute : computable (umin₀ F) :=
      sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
+ 
+ End umin₀_compute.
 diff --git a/theories/umin_compute_details.v b/theories/umin_compute_details.v
-index 690b77b..0ebeb9b 100644
+index 3783ae6..0ebeb9b 100644
 --- a/theories/umin_compute_details.v
 +++ b/theories/umin_compute_details.v
-@@ -17,7 +17,7 @@ Section umin_compute.
+@@ -11,13 +11,13 @@
+ 
+ From Coq Require Import Utf8.
+ 
+-From MuRec Require Import sigma relations arith_mini between schemes compute_def linear_search.
++From MuRec Require Import sigma relations arith_mini between schemes computable_def linear_search.
+ 
+ Section umin_compute.
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
+-           (f : ∀n, compute (F n)).
 +           (f : ∀n, computableᵤ (F n)).
  
    Arguments Ffun {_ _ _}.
@@ -226,7 +409,14 @@ index 690b77b..0ebeb9b 100644
      match k return F _ k → _ with
      | 0   => λ e, ⟪n, ⟨t,e, b⟩ₚ⟫
      | S k => λ e, loop_opt (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟨t, ⟪_,e⟫ₚ⟩ₚ)
-@@ -97,7 +97,7 @@ Section umin_compute.
+@@ -91,13 +91,13 @@ Section umin_compute.
+ 
+      This simplified version of the post-condition happens to be identical to
+      umin F s, which is at the same time the pre and the post-condition of the
+-     intended algorithm (umin_compute), by the very definition of compute.
++     intended algorithm (umin_compute), by the very definition of computable.
+   *)
+ 
    (* The Let before the Fixpoint below forces the inlining of loop inside
       linear_search *)
    Let Fixpoint loop n (d : 𝔻 n) (b : btwn (pos_at F) s n) : sig (umin F s) :=
@@ -235,12 +425,24 @@ index 690b77b..0ebeb9b 100644
      match k return F _ k → _ with
      | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
      | S _ => λ e, loop (S n) (𝔻_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
-@@ -132,7 +132,7 @@ Section umin₀_compute.
+@@ -121,7 +121,7 @@ Section umin_compute.
+     - apply pos_at_def_at.
+   Qed.
+ 
+-  Definition umin_compute : compute (umin F s) :=
++  Definition umin_compute : computable (umin F s) :=
+     linear_search  ∘  ex_monotonic umin_ℙre.
+ 
+ End umin_compute.
+@@ -132,9 +132,9 @@ Section umin₀_compute.
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
+-           (f : ∀n, compute (F n)).
 +           (f : ∀n, computableᵤ (F n)).
  
-   Definition umin₀_compute : computable (umin₀ F) :=
+-  Definition umin₀_compute : compute (umin₀ F) :=
++  Definition umin₀_compute : computable (umin₀ F) :=
      sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
+ 
+ End umin₀_compute.
