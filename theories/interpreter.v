@@ -67,7 +67,7 @@ Section recalg_coq.
     | ra_zero         => Zr_compute
     | ra_succ         => Sc_compute
     | ra_proj i       => Id_compute i
-    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ x, ⟦x⟧ Va) (λ p, ⟦π₁ p⟧ₒ Va (π₂ p)) Sab cVa)
+    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va dVa, vec_map_compute (λ x, ⟦x⟧ Va) (λ p, ⟦π₁ p⟧ₒ Va (π₂ p)) Sab dVa)
     | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
     | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
     end
