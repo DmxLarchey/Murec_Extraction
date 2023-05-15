@@ -26,11 +26,11 @@ Section prec_compute.
 
   Section prim_rec_compute_props.
 
-    Variables (n : nat) (e : ∃y, prim_rec F G x (S n) y).
+    Variables (n : nat) (d : ∃y, prim_rec F G x (S n) y).
 
     Local Fact prc_TC1 : ∃y, prim_rec F G x n y.
     Proof.
-      destruct e as (? & yn₁ & ? & ?).
+      destruct d as (? & yn₁ & ? & ?).
       now exists yn₁.
     Qed.
 
@@ -38,7 +38,7 @@ Section prec_compute.
 
     Local Fact prc_TC2 : ∃y, G x n yn y.
     Proof.
-      destruct e as (yn₁' & yn₁ & Hyn₁ & Hyn₁').
+      destruct d as (yn₁' & yn₁ & Hyn₁ & Hyn₁').
       exists yn₁'.
       now rewrite <- (prim_rec_fun Ffun Gfun Hyn₁ Hyn).
     Qed.
@@ -56,9 +56,9 @@ Section prec_compute.
 
   Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
     match m with
-      | 0   => λ e, Fcomp x e
-      | S n => λ e, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 e) in
-                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 e y_yn) in
+      | 0   => λ d, Fcomp x d
+      | S n => λ d, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 d) in
+                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 d y_yn) in
                     ⟪yn', prc_PO1 y_yn yn_yn'⟫
     end.
 
