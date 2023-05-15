@@ -28,34 +28,34 @@ Section Cn_compute.
 
   Section Cn_props.
 
-    Variables (Va : vec nat a) (cVa : ex (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va)).
+    Variables (Va : vec nat a) (dVa : ex (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va)).
 
     Local Fact Cn_p1 : ∃Vb, ∀i, ⟦Sab.[i]⟧ Va Vb.[i].
     Proof.
-      destruct cVa as (y & Vb & H1 & H2).
+      destruct dVa as (y & Vb & H1 & H2).
       exists Vb; intros i.
       specialize (H2 i).
       now rewrite vec_prj_map in H2.
     Qed.
 
-    Variables (Vb : vec nat b) (HVb : ∀i, ⟦Sab.[i]⟧ Va Vb.[i]).
+    Variables (Vb : vec nat b) (Va_Vb : ∀i, ⟦Sab.[i]⟧ Va Vb.[i]).
 
     Fact Cn_p2 : ∃y, ⟦Sb⟧ Vb y.
     Proof.
-      destruct cVa as (y & Wb & H1 & H2).
+      destruct dVa as (y & Wb & H1 & H2).
       exists y.
       replace Vb with Wb; trivial.
       apply vec_prj_ext; intros i.
-      specialize (H2 i); specialize (HVb i).
+      specialize (H2 i); specialize (Va_Vb i).
       rewrite vec_prj_map in H2.
-      revert H2 HVb; apply ra_sem_fun.
+      revert H2 Va_Vb; apply ra_sem_fun.
     Qed.
 
-    Variables (y : nat) (Hy : ⟦Sb⟧ Vb y).
+    Variables (y : nat) (Vb_y : ⟦Sb⟧ Vb y).
 
     Fact Cn_p3 : ⟦ra_comp Sb Sab⟧ Va y.
     Proof.
-      exists Vb; refine (conj Hy _).
+      exists Vb; refine (conj Vb_y _).
       intro; now rewrite vec_prj_map.
     Qed.
 
@@ -66,9 +66,9 @@ Section Cn_compute.
   Arguments Cn_p3 {_} {_} _ {_}.
 
   Definition Cn_compute : ∀Va, compute (Cn ⟦Sb⟧ (vec_map ra_sem Sab) Va) :=
-    λ Va cVa, let (Vb,cVb) := cSab Va (Cn_p1 cVa) in
-              let (y,cy)   := cSb Vb (Cn_p2 cVa cVb) in
-              ⟪y, Cn_p3 cVb cy⟫.
+    λ Va dVa, let (Vb, Va_Vb) := cSab Va (Cn_p1 dVa) in
+              let (y, Vb_y)   := cSb Vb (Cn_p2 dVa Va_Vb) in
+              ⟪y, Cn_p3 Va_Vb Vb_y⟫.
 
 End Cn_compute.
 
@@ -83,7 +83,7 @@ Section Pr_compute.
   Definition Pr_compute : ∀Va', compute (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
     vec_S_inv (λ z Va,
       prim_rec_compute (ra_sem_fun _)
-                       (λ V cV, cSa V (πᵤ cV))
+                       (λ V dV, cSa V (πᵤ dV))
                        (λ _ _ _, ra_sem_fun _ _)
                        (λ V n x cVnx, cSa'' (n ∷ x ∷ V) (πᵤ cVnx))
                        Va
@@ -100,7 +100,7 @@ Section Mn_compute.
 
   Definition Mn_compute Va : compute (Mn ⟦Sa'⟧ Va) :=
     umin₀_compute (λ _, ra_sem_fun _ _)
-                  (λ n cn, cSa' (n ∷ Va) (πᵤ cn)).
+                  (λ n dn, cSa' (n ∷ Va) (πᵤ dn)).
 
 End Mn_compute.
 

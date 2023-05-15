@@ -1,9 +1,9 @@
-diff --git a/theories/computable.v b/theories/computable.v
-index 8fe7161..38f24b2 100644
---- a/theories/computable.v
-+++ b/theories/computable.v
+diff --git a/theories/compute.v b/theories/compute.v
+index d2b48b6..7e10d2d 100644
+--- a/theories/compute.v
++++ b/theories/compute.v
 @@ -83,9 +83,9 @@ Section Pr_compute.
-   Definition Pr_compute : ∀Va', computable (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
+   Definition Pr_compute : ∀Va', compute (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
      vec_S_inv (λ z Va,
        prim_rec_compute (ra_sem_fun _)
 -                       (λ V cV, cSa V cV)
@@ -16,26 +16,26 @@ index 8fe7161..38f24b2 100644
      ).
 @@ -100,7 +100,7 @@ Section Mn_compute.
  
-   Definition Mn_compute Va : computable (Mn ⟦Sa'⟧ Va) :=
+   Definition Mn_compute Va : compute (Mn ⟦Sa'⟧ Va) :=
      umin₀_compute (λ _, ra_sem_fun _ _)
 -                  (λ n cn, cSa' (n ∷ Va) cn).
 +                  (λ n cn, cSa' (n ∷ Va) (πᵤ cn)).
  
  End Mn_compute.
  
-diff --git a/theories/computable_def.v b/theories/computable_def.v
-index c860379..8b2418c 100644
---- a/theories/computable_def.v
-+++ b/theories/computable_def.v
-@@ -15,3 +15,6 @@ From Coq Require Import Utf8.
-     can be computed out of a proof of inhabitation *)
+diff --git a/theories/compute_def.v b/theories/compute_def.v
+index 6389fd8..c9c217c 100644
+--- a/theories/compute_def.v
++++ b/theories/compute_def.v
+@@ -16,3 +16,6 @@ From Coq Require Import Utf8.
+     certificate *)
  
- Definition computable {X} (P : X → Prop) := ex P → sig P.
-+Definition computable_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
+ Definition compute {X} (P : X → Prop) := ex P → sig P.
++Definition compute_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
 +
-+Notation computableᵤ := computable_unit.
++Notation computeᵤ := compute_unit.
 diff --git a/theories/interpreter.v b/theories/interpreter.v
-index 1da0919..d19436e 100644
+index cf4fc91..4429e34 100644
 --- a/theories/interpreter.v
 +++ b/theories/interpreter.v
 @@ -67,7 +67,7 @@ Section recalg_coq.
@@ -91,15 +91,15 @@ index 2cb83fd..c233849 100644
      | right q => loop (S n) (𝔻ls_π₂ d q) (btwn_next b ⟨t,q⟩ₚ)
      end.
 diff --git a/theories/map_compute.v b/theories/map_compute.v
-index cea7ec5..31036bf 100644
+index 4081d24..b5c8cd1 100644
 --- a/theories/map_compute.v
 +++ b/theories/map_compute.v
 @@ -17,7 +17,7 @@ Section vec_map_compute.
  
    Variables (X Y : Type)
              (F : X → Y → Prop)
--            (f : ∀ x, computable (F x)).
-+            (f : ∀ x, computableᵤ (F x)).
+-            (f : ∀ x, compute (F x)).
++            (f : ∀ x, computeᵤ (F x)).
  
    Section vec_map_compute_props.
  
@@ -113,25 +113,25 @@ index cea7ec5..31036bf 100644
                          ⟪y ∷ w, vmc_PO2 x_y v_w⟫
        end in
 diff --git a/theories/prim_rec_compute.v b/theories/prim_rec_compute.v
-index cf213ba..c68fbde 100644
+index 1fb7ffe..dd6e095 100644
 --- a/theories/prim_rec_compute.v
 +++ b/theories/prim_rec_compute.v
 @@ -18,10 +18,10 @@ Section prec_compute.
    Variables (X Y : Type)
              (F : X → Y → Prop)
              (Ffun : functional F)
--            (Fcomp : ∀x, computable (F x))
-+            (Fcomp : ∀x, computableᵤ (F x))
+-            (Fcomp : ∀x, compute (F x))
++            (Fcomp : ∀x, computeᵤ (F x))
              (G : X → nat → Y → Y → Prop)
              (Gfun : ∀ x n, functional (G x n))
--            (Gcomp : ∀ x n y, computable (G x n y))
-+            (Gcomp : ∀ x n y, computableᵤ (G x n y))
+-            (Gcomp : ∀ x n y, compute (G x n y))
++            (Gcomp : ∀ x n y, computeᵤ (G x n y))
              (x : X).
  
    Section prim_rec_compute_props.
 @@ -56,9 +56,9 @@ Section prec_compute.
  
-   Fixpoint prim_rec_compute m : computable (prim_rec F G x m) :=
+   Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
      match m with
 -      | 0   => λ e, Fcomp x e
 +      | 0   => λ e, Fcomp x ⌊e⌋ᵤ
@@ -156,15 +156,15 @@ index 84c46a6..fa53c52 100644
    λ df, exist (λ f, ∀ x, P x (f x)) (λ x, π₁ (df x)) (λ x, π₂ (df x)).
  
 diff --git a/theories/umin_compute.v b/theories/umin_compute.v
-index 23ab391..762d487 100644
+index 60b2a16..9996818 100644
 --- a/theories/umin_compute.v
 +++ b/theories/umin_compute.v
 @@ -17,7 +17,7 @@ Section umin_compute.
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
-+           (f : ∀n, computableᵤ (F n)).
+-           (f : ∀n, compute (F n)).
++           (f : ∀n, computeᵤ (F n)).
  
    Arguments Ffun {_ _ _}.
  
@@ -181,21 +181,21 @@ index 23ab391..762d487 100644
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
-+           (f : ∀n, computableᵤ (F n)).
+-           (f : ∀n, compute (F n)).
++           (f : ∀n, computeᵤ (F n)).
  
-   Definition umin₀_compute : computable (umin₀ F) :=
+   Definition umin₀_compute : compute (umin₀ F) :=
      sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
 diff --git a/theories/umin_compute_details.v b/theories/umin_compute_details.v
-index 690b77b..0ebeb9b 100644
+index 3783ae6..da523ae 100644
 --- a/theories/umin_compute_details.v
 +++ b/theories/umin_compute_details.v
 @@ -17,7 +17,7 @@ Section umin_compute.
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
-+           (f : ∀n, computableᵤ (F n)).
+-           (f : ∀n, compute (F n)).
++           (f : ∀n, computeᵤ (F n)).
  
    Arguments Ffun {_ _ _}.
  
@@ -239,8 +239,8 @@ index 690b77b..0ebeb9b 100644
  
    Variable (F : nat → nat → Prop)
             (Ffun : functional F)
--           (f : ∀n, computable (F n)).
-+           (f : ∀n, computableᵤ (F n)).
+-           (f : ∀n, compute (F n)).
++           (f : ∀n, computeᵤ (F n)).
  
-   Definition umin₀_compute : computable (umin₀ F) :=
+   Definition umin₀_compute : compute (umin₀ F) :=
      sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.

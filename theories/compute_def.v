@@ -11,7 +11,7 @@
 
 From Coq Require Import Utf8.
 
-(** A predicate "computes" if a value in it can be computed 
+(** A predicate "computes" if a value in it can be computed
     using of a proof of its inhabitation has termination
     certificate *)
 
