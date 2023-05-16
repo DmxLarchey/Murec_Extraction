@@ -1,13 +1,13 @@
 diff --git a/theories/compute.v b/theories/compute.v
-index d2b48b6..7e10d2d 100644
+index ee4b4e1..1290db3 100644
 --- a/theories/compute.v
 +++ b/theories/compute.v
 @@ -83,9 +83,9 @@ Section Pr_compute.
    Definition Pr_compute : ∀Va', compute (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
      vec_S_inv (λ z Va,
        prim_rec_compute (ra_sem_fun _)
--                       (λ V cV, cSa V cV)
-+                       (λ V cV, cSa V (πᵤ cV))
+-                       (λ V dV, cSa V dV)
++                       (λ V dV, cSa V (πᵤ dV))
                         (λ _ _ _, ra_sem_fun _ _)
 -                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) cVnx)
 +                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) (πᵤ cVnx))
@@ -18,13 +18,13 @@ index d2b48b6..7e10d2d 100644
  
    Definition Mn_compute Va : compute (Mn ⟦Sa'⟧ Va) :=
      umin₀_compute (λ _, ra_sem_fun _ _)
--                  (λ n cn, cSa' (n ∷ Va) cn).
-+                  (λ n cn, cSa' (n ∷ Va) (πᵤ cn)).
+-                  (λ n dn, cSa' (n ∷ Va) dn).
++                  (λ n dn, cSa' (n ∷ Va) (πᵤ dn)).
  
  End Mn_compute.
  
 diff --git a/theories/compute_def.v b/theories/compute_def.v
-index 6389fd8..c9c217c 100644
+index 5329295..bad92a7 100644
 --- a/theories/compute_def.v
 +++ b/theories/compute_def.v
 @@ -16,3 +16,6 @@ From Coq Require Import Utf8.
@@ -35,15 +35,15 @@ index 6389fd8..c9c217c 100644
 +
 +Notation computeᵤ := compute_unit.
 diff --git a/theories/interpreter.v b/theories/interpreter.v
-index cf4fc91..4429e34 100644
+index f37b33e..6ddc416 100644
 --- a/theories/interpreter.v
 +++ b/theories/interpreter.v
 @@ -67,7 +67,7 @@ Section recalg_coq.
      | ra_zero         => Zr_compute
      | ra_succ         => Sc_compute
      | ra_proj i       => Id_compute i
--    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ Sa, ⟦Sa⟧ₒ Va) Sab cVa)
-+    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va cVa, vec_map_compute (λ Sa cSa, ⟦Sa⟧ₒ Va (πᵤ cSa)) Sab cVa)
+-    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va dVa, vec_map_compute (λ Sa, ⟦Sa⟧ₒ Va) Sab dVa)
++    | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va dVa, vec_map_compute (λ Sa cSa, ⟦Sa⟧ₒ Va (πᵤ cSa)) Sab dVa)
      | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
      | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
      end
@@ -113,7 +113,7 @@ index 4081d24..b5c8cd1 100644
                          ⟪y ∷ w, vmc_PO2 x_y v_w⟫
        end in
 diff --git a/theories/prim_rec_compute.v b/theories/prim_rec_compute.v
-index 1fb7ffe..dd6e095 100644
+index 5095ac1..ae8be3c 100644
 --- a/theories/prim_rec_compute.v
 +++ b/theories/prim_rec_compute.v
 @@ -18,10 +18,10 @@ Section prec_compute.
@@ -133,11 +133,11 @@ index 1fb7ffe..dd6e095 100644
  
    Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
      match m with
--      | 0   => λ e, Fcomp x e
-+      | 0   => λ e, Fcomp x ⌊e⌋ᵤ
-       | S n => λ e, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 e) in
--                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 e y_yn) in
-+                    let (yn', yn_yn') := Gcomp x n yn ⌊prc_TC2 e y_yn⌋ᵤ in
+-      | 0   => λ d, Fcomp x d
++      | 0   => λ d, Fcomp x ⌊d⌋ᵤ
+       | S n => λ d, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 d) in
+-                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 d y_yn) in
++                    let (yn', yn_yn') := Gcomp x n yn ⌊prc_TC2 d y_yn⌋ᵤ in
                      ⟪yn', prc_PO1 y_yn yn_yn'⟫
      end.
  
