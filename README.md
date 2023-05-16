@@ -30,7 +30,11 @@ The code in this GitHub repository is distributed under the
 This artifact consists, in the sub-directory [`theories`](theories):
 + a `makefile`, generating a well suited `Makefile.coq` from;
 + a `_CoqProject` file listing;
-+ Coq source code files `*.v`;
++ Coq source code files `*.v`:
+  - a library of basic files
+    (`sigma.v` `relations.v` `arith_mini.v` `between.v` `index.v` and `vec.v`);
+  - then either standalone.v which contains the main development,
+    or a strutured presentation of this file into smaller pieces;
 + and also two diff files: `[unit,hide].diff`;
 
 The diff files or the two _pull requests (PR)_ below are intended to visualize 
