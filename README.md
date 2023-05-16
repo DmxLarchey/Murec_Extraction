@@ -50,7 +50,7 @@ The Coq code was developed under Coq `8.15` and then `8.16`:
   starting from at least Coq `8.10`. 
 - we positively tested the following version of
   Coq on this code: `8.10.2`, `8.11.2`, `8.12.2`, 
-     `8.13.[1,2]`, `8.14.1`, `8.15.[0,2]` and `8.16.[0,1]`.
+     `8.13.[1,2]`, `8.14.1`, `8.15.[0,2]`, `8.16.[0,1]` and `8.17.[0]`.
 - the code does not use any external libraries except 
   from the `Init`, `Utf8` and `Extraction` modules of the 
   Coq standard library which requires no additional
