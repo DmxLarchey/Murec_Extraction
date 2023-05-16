@@ -41,8 +41,8 @@ Section recalg_coq.
      ra_compute itself as first argument, though with its second 
      argument instanciated on Va, ie (λ Sa, ⟦Sa⟧ₒ Va). The other 
      operators receive ⟦.⟧ₒ already instanciated in a subterm so 
-     the guard-checker need not dig into the code of 
-     [Cn,Pr_Mn]_compute.
+     the guard-checker need not dig into the code of Cn_compute
+     (resp. Pr_compute or Mn_compute).
 
      However, the guard-checker performs an analysis of the code
      of vec_map_compute to verify that it calls the fixpoint 
