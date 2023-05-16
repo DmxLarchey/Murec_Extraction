@@ -28,39 +28,31 @@ Section recalg_coq.
   (* We show that the graph ⟦Sa⟧ computes for any
      Sa : recalg a, ie it can be reified into a Coq term
 
-         ∀Va : vec nat a, ex (⟦Sa⟧ Va) → sig (⟦Sa⟧ Va)
+        ⟦Sa⟧ₒ : ∀Va : vec nat a, ex (⟦Sa⟧ Va) → sig (⟦Sa⟧ Va)
 
      Moreover, the extracted code is the Ocaml interpreter of
      the μ-recursive algorithm that Sa describes *)
 
-  (** Beware that Cn_compute, Pr_compute and Mn_compute receive the
-      fixpoint ra_compute itself as first argument hence the guard-checker
-      will perform an analysis of their code to verify that they
-      only call the fixpoint on sub-terms of the argument Sa.
+ (*  We renamed "a" into "k" to avoid name clash on Sa between
+     ra_compute and Cn_compute at Extraction, which generates
+     a fresh new name like "sa0", not so nice at display. *)
 
-      Notice that this nesting *already exists* in the Fixpoint
-      definition of ra_sem Sa = ⟦Sa⟧ in the call, that is
-      vec_map (λ f, ⟦f⟧) Sab which is identical
-      to vec_map ra_sem Sab.
+ (** Beware that *only* vec_map_compute receives the fixpoint 
+     ra_compute itself as first argument, though with its second 
+     argument instanciated on Va, ie (λ Sa, ⟦Sa⟧ₒ Va). The other 
+     operators receive ⟦.⟧ₒ already instanciated in a subterm so 
+     the guard-checker need not dig into the code of 
+     [Cn,Pr_Mn]_compute.
 
-      Notice that the branch "murec_artifact_hvec" shows that
-      it is possible to write ra_compute much like ra_sem,
-      except that vec_map needs to be upgraded to vec_hmap
-      outputting an heterogeneous vector instead of a vector. *)
+     However, the guard-checker performs an analysis of the code
+     of vec_map_compute to verify that it calls the fixpoint 
+     ra_compute on sub-terms of the argument (ra_comp Sb Sab), 
+     in this case, the components of Sab.
 
-  (*  We renamed "a" into "k" to avoid name clash on Sa between
-      ra_compute and Cn_compute at Extraction, which generates
-      a fresh new name like "sa0", not so nice at display *)
-
-   (** Beware that only vec_map_compute receives the
-       fixpoint ra_compute itself as first argument hence
-       the guard-checker will perform an analysis of its code
-       to verify that it calls the fixpoint on sub-terms
-       of the argument Skb *)
-
-   (*  We renamed "a" into "k" to avoid name clash on Sa between
-       ra_compute and Cn_compute at Extraction, which generates
-       a fresh new name like "sa0", not so nice at display *)
+     Notice that this nesting *already exists* in the Fixpoint
+     definition of ra_sem = ⟦.⟧ in case of the ra_comp
+     constructor, that is vec_map (λ f, ⟦f⟧) Sab which is 
+     identical to vec_map ra_sem Sab. *)
 
   Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, compute (⟦Sk⟧ Vk) :=
     match Sk with
