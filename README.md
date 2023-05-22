@@ -33,7 +33,7 @@ This artifact consists, in the sub-directory [`theories`](theories):
 + Coq source code files `*.v`:
   - a library of basic files
     (`sigma.v` `relations.v` `arith_mini.v` `between.v` `index.v` and `vec.v`);
-  - then either standalone.v which contains the main development,
+  - then either [`standalone.v`](theories/standalone.v) which contains the main development,
     or a strutured presentation of this file into smaller pieces;
 + and also two diff files: `[unit,hide].diff`;
 
