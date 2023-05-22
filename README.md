@@ -32,9 +32,14 @@ This artifact consists, in the sub-directory [`theories`](theories):
 + a `_CoqProject` file listing;
 + Coq source code files `*.v`:
   - a library of basic files
-    (`sigma.v` `relations.v` `arith_mini.v` `between.v` `index.v` and `vec.v`);
+    ([`sigma.v`](theories/sigma.v) 
+     [`relations.v`](theories/relations.v) 
+     [`arith_mini.v`](theories/arith_mini.v)
+     [`between.v`](theories/between.v)
+     [`index.v`](theories/index.v) and 
+     [`vec.v`](theories/vec.v));
   - then either [`standalone.v`](theories/standalone.v) which contains the main development,
-    or a strutured presentation of this file into smaller pieces;
+    or a strutured presentation of this file into smaller pieces culminating into [`interpreter.v`](theories/interpreter.v);
 + and also two diff files: `[unit,hide].diff`;
 
 The diff files or the two _pull requests (PR)_ below are intended to visualize 
