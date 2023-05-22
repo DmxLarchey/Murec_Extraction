@@ -35,10 +35,10 @@ index 5329295..bad92a7 100644
 +
 +Notation computeᵤ := compute_unit.
 diff --git a/theories/interpreter.v b/theories/interpreter.v
-index f37b33e..6ddc416 100644
+index 1f7f63e..85d8996 100644
 --- a/theories/interpreter.v
 +++ b/theories/interpreter.v
-@@ -67,7 +67,7 @@ Section recalg_coq.
+@@ -59,7 +59,7 @@ Section recalg_coq.
      | ra_zero         => Zr_compute
      | ra_succ         => Sc_compute
      | ra_proj i       => Id_compute i
@@ -47,7 +47,7 @@ index f37b33e..6ddc416 100644
      | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
      | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
      end
-@@ -113,6 +113,9 @@ Extraction Inline sig_monotonic comp reify.
+@@ -105,6 +105,9 @@ Extraction Inline sig_monotonic comp reify.
  Extraction Inline umin₀_compute.
  Extraction Inline Id_compute Zr_compute Sc_compute Pr_compute Mn_compute Cn_compute.
  
