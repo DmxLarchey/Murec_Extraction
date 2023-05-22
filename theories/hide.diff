@@ -24,10 +24,10 @@ index ee4b4e1..d9bb074 100644
  End Mn_compute.
  
 diff --git a/theories/interpreter.v b/theories/interpreter.v
-index f37b33e..9f489ae 100644
+index 1f7f63e..61c778c 100644
 --- a/theories/interpreter.v
 +++ b/theories/interpreter.v
-@@ -67,7 +67,7 @@ Section recalg_coq.
+@@ -59,7 +59,7 @@ Section recalg_coq.
      | ra_zero         => Zr_compute
      | ra_succ         => Sc_compute
      | ra_proj i       => Id_compute i

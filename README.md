@@ -30,8 +30,18 @@ The code in this GitHub repository is distributed under the
 This artifact consists, in the sub-directory [`theories`](theories):
 + a `makefile`, generating a well suited `Makefile.coq` from;
 + a `_CoqProject` file listing;
-+ Coq source code files `*.v`;
-+ and also two diff files: `[unit,hide].diff`;
++ Coq source code files `*.v`:
+  - a library of basic files
+    ([`sigma.v`](theories/sigma.v) 
+     [`relations.v`](theories/relations.v) 
+     [`arith_mini.v`](theories/arith_mini.v)
+     [`between.v`](theories/between.v)
+     [`index.v`](theories/index.v) and 
+     [`vec.v`](theories/vec.v));
+  - then either [`standalone.v`](theories/standalone.v) which contains the main development,
+    or a _structured presentation_ of this file into smaller pieces, starting at [`recalg.v`](theories/recalg.v) 
+    and culminating at [`interpreter.v`](theories/interpreter.v);
++ and also two diff files: [`unit.diff`](theories/unit.diff) and [`hide.diff`](theories/hide.diff);
 
 The diff files or the two _pull requests (PR)_ below are intended to visualize 
 the difference between the three branches of the source code:
@@ -50,7 +60,7 @@ The Coq code was developed under Coq `8.15` and then `8.16`:
   starting from at least Coq `8.10`. 
 - we positively tested the following version of
   Coq on this code: `8.10.2`, `8.11.2`, `8.12.2`, 
-     `8.13.[1,2]`, `8.14.1`, `8.15.[0,2]` and `8.16.[0,1]`.
+     `8.13.[1,2]`, `8.14.1`, `8.15.[0,2]`, `8.16.[0,1]` and `8.17.[0]`.
 - the code does not use any external libraries except 
   from the `Init`, `Utf8` and `Extraction` modules of the 
   Coq standard library which requires no additional

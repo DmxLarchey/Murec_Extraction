@@ -10,3 +10,5 @@
 *.nia.cache
 *.vok
 *.vos
+ra.ml*
+ra.hs
