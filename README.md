@@ -39,7 +39,8 @@ This artifact consists, in the sub-directory [`theories`](theories):
      [`index.v`](theories/index.v) and 
      [`vec.v`](theories/vec.v));
   - then either [`standalone.v`](theories/standalone.v) which contains the main development,
-    or a strutured presentation of this file into smaller pieces culminating into [`interpreter.v`](theories/interpreter.v);
+    or a _structured presentation_ of this file into smaller pieces, starting at [`recalg.v`](theories/recalg.v) 
+    and culminating at [`interpreter.v`](theories/interpreter.v);
 + and also two diff files: [`unit.diff`](theories/unit.diff) and [`hide.diff`](theories/hide.diff);
 
 The diff files or the two _pull requests (PR)_ below are intended to visualize 
