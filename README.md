@@ -40,7 +40,7 @@ This artifact consists, in the sub-directory [`theories`](theories):
      [`vec.v`](theories/vec.v));
   - then either [`standalone.v`](theories/standalone.v) which contains the main development,
     or a strutured presentation of this file into smaller pieces culminating into [`interpreter.v`](theories/interpreter.v);
-+ and also two diff files: `[unit,hide].diff`;
++ and also two diff files: [`unit.diff`](theories/unit.diff) and [`hide.diff`](theories/hide.diff);
 
 The diff files or the two _pull requests (PR)_ below are intended to visualize 
 the difference between the three branches of the source code:
