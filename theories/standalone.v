@@ -336,7 +336,7 @@ Section umin_compute.
 
   Variable s : nat.
 
-  Let Fixpoint loop n (d : 𝔻umin n) (b : btwn (λ n, ∃k, F n (S k)) s n) : sig (umin F s) :=
+  Let Fixpoint loop n (d : 𝔻umin n) (b : btwn Q s n) : sig (umin F s) :=
     let (k,Hk) := f n (𝔻umin_π₁ d) in
     match k return F _ k → _ with
     | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
