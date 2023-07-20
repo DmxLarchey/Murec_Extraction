@@ -128,7 +128,7 @@ index 5095ac1..5f449c3 100644
      end.
  
 diff --git a/theories/standalone.v b/theories/standalone.v
-index b50d771..43c9797 100644
+index 1bb72a3..cb5194d 100644
 --- a/theories/standalone.v
 +++ b/theories/standalone.v
 @@ -198,7 +198,7 @@ Section vec_map_compute.
@@ -196,7 +196,7 @@ index b50d771..43c9797 100644
 @@ -337,7 +336,7 @@ Section umin_compute.
    Variable s : nat.
  
-   Let Fixpoint loop n (d : 𝔻umin n) (b : btwn (λ n, ∃k, F n (S k)) s n) : sig (umin F s) :=
+   Let Fixpoint loop n (d : 𝔻umin n) (b : btwn Q s n) : sig (umin F s) :=
 -    let (k,Hk) := f n (𝔻umin_π₁ d) in
 +    let (k,Hk) := f ⟪n,𝔻umin_π₁ d⟫ in
      match k return F _ k → _ with

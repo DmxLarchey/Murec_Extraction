@@ -156,7 +156,7 @@ index 84c46a6..fa53c52 100644
    λ df, exist (λ f, ∀ x, P x (f x)) (λ x, π₁ (df x)) (λ x, π₂ (df x)).
  
 diff --git a/theories/standalone.v b/theories/standalone.v
-index b50d771..20f87a1 100644
+index 1bb72a3..1553d8c 100644
 --- a/theories/standalone.v
 +++ b/theories/standalone.v
 @@ -191,6 +191,8 @@ Notation "⟦ Sa ⟧" := (ra_sem Sa).
@@ -223,7 +223,7 @@ index b50d771..20f87a1 100644
 @@ -337,7 +339,7 @@ Section umin_compute.
    Variable s : nat.
  
-   Let Fixpoint loop n (d : 𝔻umin n) (b : btwn (λ n, ∃k, F n (S k)) s n) : sig (umin F s) :=
+   Let Fixpoint loop n (d : 𝔻umin n) (b : btwn Q s n) : sig (umin F s) :=
 -    let (k,Hk) := f n (𝔻umin_π₁ d) in
 +    let (k,Hk) := f n ⌊𝔻umin_π₁ d⌋ᵤ in
      match k return F _ k → _ with
