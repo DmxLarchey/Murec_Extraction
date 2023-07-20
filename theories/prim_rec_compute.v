@@ -18,10 +18,10 @@ Section prec_compute.
   Variables (X Y : Type)
             (F : X → Y → Prop)
             (Ffun : functional F)
-            (Fcomp : ∀x, compute (F x))
+            (Fcomp : ∀ p : { x | ex (F x) }, sig (F (π₁ p)))
             (G : X → nat → Y → Y → Prop)
             (Gfun : ∀ x n, functional (G x n))
-            (Gcomp : ∀ x n y, compute (G x n y))
+            (Gcomp : ∀ x n (p : { y | ex (G x n y) }), sig (G x n (π₁ p)))
             (x : X).
 
   Section prim_rec_compute_props.
@@ -56,9 +56,9 @@ Section prec_compute.
 
   Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
     match m with
-      | 0   => λ d, Fcomp x d
+      | 0   => λ d, Fcomp ⟪x,d⟫
       | S n => λ d, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 d) in
-                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 d y_yn) in
+                    let (yn', yn_yn') := Gcomp x n ⟪yn,prc_TC2 d y_yn⟫ in
                     ⟪yn', prc_PO1 y_yn yn_yn'⟫
     end.
 

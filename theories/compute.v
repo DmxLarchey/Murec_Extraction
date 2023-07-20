@@ -83,9 +83,9 @@ Section Pr_compute.
   Definition Pr_compute : ∀Va', compute (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
     vec_S_inv (λ z Va,
       prim_rec_compute (ra_sem_fun _)
-                       (λ V dV, cSa V dV)
+                       (λ p, cSa (π₁ p) (π₂ p))
                        (λ _ _ _, ra_sem_fun _ _)
-                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) cVnx)
+                       (λ V n x, cSa'' (n ∷ π₁ x ∷ V) (π₂ x))
                        Va
                        z
     ).
@@ -100,7 +100,7 @@ Section Mn_compute.
 
   Definition Mn_compute Va : compute (Mn ⟦Sa'⟧ Va) :=
     umin₀_compute (λ _, ra_sem_fun _ _)
-                  (λ n dn, cSa' (n ∷ Va) dn).
+                  (λ p, cSa' (π₁ p ∷ Va) (π₂ p)).
 
 End Mn_compute.
 

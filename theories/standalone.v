@@ -198,7 +198,7 @@ Section vec_map_compute.
 
   Variables (X Y : Type)
             (F : X → Y → Prop)
-            (f : ∀ x, compute (F x)).
+            (f : ∀ p : { x | ex (F x) }, sig (F (π₁ p))).
 
   Section vec_map_compute_props.
 
@@ -222,7 +222,7 @@ Section vec_map_compute.
     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
       match v with
       | ⟨⟩    => λ _,   ⟪⟨⟩, vmc_PO1⟫
-      | x ∷ v => λ Fxv, let (y, x_y) := f x (Fxv 𝕆) in
+      | x ∷ v => λ Fxv, let (y, x_y) := f ⟪x,Fxv 𝕆⟫ in
                         let (w, v_w) := loop v (λ i, Fxv (𝕊 i)) in
                         ⟪y ∷ w, vmc_PO2 x_y v_w⟫
       end in
@@ -230,7 +230,7 @@ Section vec_map_compute.
 
 End vec_map_compute.
 
-Arguments vec_map_compute {_ _ _} _ {n} v.
+Arguments vec_map_compute {_ _} _ _ {n} v.
 
 (* Computation of primitive recursion *)
 
@@ -239,10 +239,10 @@ Section prim_rec_compute.
   Variables (X Y : Type)
             (F : X → Y → Prop)
             (Ffun : functional F)
-            (Fcomp : ∀x, compute (F x))
+            (Fcomp : ∀ p : { x | ex (F x) }, sig (F (π₁ p)))
             (G : X → nat → Y → Y → Prop)
             (Gfun : ∀ x n, functional (G x n))
-            (Gcomp : ∀ x n y, compute (G x n y))
+            (Gcomp : ∀ x n (p : { y | ex (G x n y) }), sig (G x n (π₁ p)))
             (x : X).
 
   Section prim_rec_compute_props.
@@ -277,9 +277,9 @@ Section prim_rec_compute.
 
   Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
     match m with
-      | 0   => λ d, Fcomp x d
+      | 0   => λ d, Fcomp ⟪x,d⟫
       | S n => λ d, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 d) in
-                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 d y_yn) in
+                    let (yn', yn_yn') := Gcomp x n ⟪yn,prc_TC2 d y_yn⟫ in
                     ⟪yn', prc_PO1 y_yn yn_yn'⟫
     end.
 
@@ -293,8 +293,7 @@ Section umin_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, compute (F n)).
-
+           (f : ∀ p : { n | ex (F n) }, sig (F (π₁ p))).
   Arguments Ffun {_ _ _}.
 
   Let T n := ∃k, F n k.
@@ -337,7 +336,7 @@ Section umin_compute.
   Variable s : nat.
 
   Let Fixpoint loop n (d : 𝔻umin n) (b : btwn Q s n) : sig (umin F s) :=
-    let (k,Hk) := f n (𝔻umin_π₁ d) in
+    let (k,Hk) := f ⟪n,𝔻umin_π₁ d⟫ in
     match k return F _ k → _ with
     | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
     | S _ => λ e, loop (S n) (𝔻umin_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
@@ -367,7 +366,7 @@ Section umin₀_compute.
 
   Variable (F : nat → nat → Prop)
            (Ffun : functional F)
-           (f : ∀n, compute (F n)).
+           (f : ∀ p : { n | ex (F n) }, sig (F (π₁ p))).
 
   Definition umin₀_compute : compute (umin₀ F) :=
     sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
@@ -447,9 +446,9 @@ Section Pr_compute.
   Definition Pr_compute : ∀Va', compute (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
     vec_S_inv (λ z Va,
       prim_rec_compute (ra_sem_fun _)
-                       (λ V dV, cSa V dV)
+                       (λ p, cSa (π₁ p) (π₂ p))
                        (λ _ _ _, ra_sem_fun _ _)
-                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) cVnx)
+                       (λ V n x, cSa'' (n ∷ π₁ x ∷ V) (π₂ x))
                        Va
                        z
     ).
@@ -464,7 +463,7 @@ Section Mn_compute.
 
   Definition Mn_compute Va : compute (Mn ⟦Sa'⟧ Va) :=
     umin₀_compute (λ _, ra_sem_fun _ _)
-                  (λ n dn, cSa' (n ∷ Va) dn).
+                  (λ p, cSa' (π₁ p ∷ Va) (π₂ p)).
 
 End Mn_compute.
 
@@ -475,7 +474,7 @@ Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, compu
   | ra_zero         => Zr_compute
   | ra_succ         => Sc_compute
   | ra_proj i       => Id_compute i
-  | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va dVa, vec_map_compute (λ Sa, ⟦Sa⟧ₒ Va) Sab dVa)
+  | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va dVa, vec_map_compute (λ x, ⟦x⟧ Va) (λ p, ⟦π₁ p⟧ₒ Va (π₂ p)) Sab dVa)
   | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
   | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
   end
