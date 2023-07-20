@@ -155,6 +155,128 @@ index 84c46a6..fa53c52 100644
  Definition reify {X Y} {P : X → Y → Prop} : (∀ x, { y | P x y }) → { f : X → Y | ∀ x, P x (f x) } :=
    λ df, exist (λ f, ∀ x, P x (f x)) (λ x, π₁ (df x)) (λ x, π₂ (df x)).
  
+diff --git a/theories/standalone.v b/theories/standalone.v
+index b50d771..20f87a1 100644
+--- a/theories/standalone.v
++++ b/theories/standalone.v
+@@ -191,6 +191,8 @@ Notation "⟦ Sa ⟧" := (ra_sem Sa).
+ (* The computational contents of µ-algorithms *)
+ 
+ Definition compute {X} (P : X → Prop) := ex P → sig P.
++Definition compute_unit {X} (P : X → Prop) := {_ : unit | ex P} → sig P.
++Notation computeᵤ := compute_unit.
+ 
+ (* Iteration of computation on a vector *)
+ 
+@@ -198,7 +200,7 @@ Section vec_map_compute.
+ 
+   Variables (X Y : Type)
+             (F : X → Y → Prop)
+-            (f : ∀ x, compute (F x)).
++            (f : ∀ x, computeᵤ (F x)).
+ 
+   Section vec_map_compute_props.
+ 
+@@ -222,7 +224,7 @@ Section vec_map_compute.
+     let fix loop {n} (v : vec X n) : (∀i, ex (F v.[i])) → _ :=
+       match v with
+       | ⟨⟩    => λ _,   ⟪⟨⟩, vmc_PO1⟫
+-      | x ∷ v => λ Fxv, let (y, x_y) := f x (Fxv 𝕆) in
++      | x ∷ v => λ Fxv, let (y, x_y) := f x ⌊Fxv 𝕆⌋ᵤ in
+                         let (w, v_w) := loop v (λ i, Fxv (𝕊 i)) in
+                         ⟪y ∷ w, vmc_PO2 x_y v_w⟫
+       end in
+@@ -239,10 +241,10 @@ Section prim_rec_compute.
+   Variables (X Y : Type)
+             (F : X → Y → Prop)
+             (Ffun : functional F)
+-            (Fcomp : ∀x, compute (F x))
++            (Fcomp : ∀x, computeᵤ (F x))
+             (G : X → nat → Y → Y → Prop)
+             (Gfun : ∀ x n, functional (G x n))
+-            (Gcomp : ∀ x n y, compute (G x n y))
++            (Gcomp : ∀ x n y, computeᵤ (G x n y))
+             (x : X).
+ 
+   Section prim_rec_compute_props.
+@@ -277,9 +279,9 @@ Section prim_rec_compute.
+ 
+   Fixpoint prim_rec_compute m : compute (prim_rec F G x m) :=
+     match m with
+-      | 0   => λ d, Fcomp x d
++      | 0   => λ d, Fcomp x ⌊d⌋ᵤ
+       | S n => λ d, let (yn , y_yn)   := prim_rec_compute n (prc_TC1 d) in
+-                    let (yn', yn_yn') := Gcomp x n yn (prc_TC2 d y_yn) in
++                    let (yn', yn_yn') := Gcomp x n yn ⌊prc_TC2 d y_yn⌋ᵤ in
+                     ⟪yn', prc_PO1 y_yn yn_yn'⟫
+     end.
+ 
+@@ -293,7 +295,7 @@ Section umin_compute.
+ 
+   Variable (F : nat → nat → Prop)
+            (Ffun : functional F)
+-           (f : ∀n, compute (F n)).
++           (f : ∀n, computeᵤ (F n)).
+ 
+   Arguments Ffun {_ _ _}.
+ 
+@@ -337,7 +339,7 @@ Section umin_compute.
+   Variable s : nat.
+ 
+   Let Fixpoint loop n (d : 𝔻umin n) (b : btwn (λ n, ∃k, F n (S k)) s n) : sig (umin F s) :=
+-    let (k,Hk) := f n (𝔻umin_π₁ d) in
++    let (k,Hk) := f n ⌊𝔻umin_π₁ d⌋ᵤ in
+     match k return F _ k → _ with
+     | 0   => λ e, ⟪n, ⟨e,b⟩ₚ⟫
+     | S _ => λ e, loop (S n) (𝔻umin_π₂ d ⟪_,e⟫ₚ) (btwn_next b ⟪_,e⟫ₚ)
+@@ -367,7 +369,7 @@ Section umin₀_compute.
+ 
+   Variable (F : nat → nat → Prop)
+            (Ffun : functional F)
+-           (f : ∀n, compute (F n)).
++           (f : ∀n, computeᵤ (F n)).
+ 
+   Definition umin₀_compute : compute (umin₀ F) :=
+     sig_monotonic umin_umin₀  ∘  umin_compute Ffun f 0  ∘  ex_monotonic umin₀_umin.
+@@ -447,9 +449,9 @@ Section Pr_compute.
+   Definition Pr_compute : ∀Va', compute (Pr ⟦Sa⟧ ⟦Sa''⟧ Va') :=
+     vec_S_inv (λ z Va,
+       prim_rec_compute (ra_sem_fun _)
+-                       (λ V dV, cSa V dV)
++                       (λ V dV, cSa V (πᵤ dV))
+                        (λ _ _ _, ra_sem_fun _ _)
+-                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) cVnx)
++                       (λ V n x cVnx, cSa'' (n ∷ x ∷ V) (πᵤ cVnx))
+                        Va
+                        z
+     ).
+@@ -464,7 +466,7 @@ Section Mn_compute.
+ 
+   Definition Mn_compute Va : compute (Mn ⟦Sa'⟧ Va) :=
+     umin₀_compute (λ _, ra_sem_fun _ _)
+-                  (λ n dn, cSa' (n ∷ Va) dn).
++                  (λ n dn, cSa' (n ∷ Va) (πᵤ dn)).
+ 
+ End Mn_compute.
+ 
+@@ -475,7 +477,7 @@ Fixpoint ra_compute {k} (Sk : recalg k) { struct Sk } : ∀Vk : vec nat k, compu
+   | ra_zero         => Zr_compute
+   | ra_succ         => Sc_compute
+   | ra_proj i       => Id_compute i
+-  | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va dVa, vec_map_compute (λ Sa, ⟦Sa⟧ₒ Va) Sab dVa)
++  | ra_comp Sb Sab  => Cn_compute ⟦Sb⟧ₒ (λ Va dVa, vec_map_compute (λ Sa cSa, ⟦Sa⟧ₒ Va (πᵤ cSa)) Sab dVa)
+   | ra_prec Sb Sb'' => Pr_compute ⟦Sb⟧ₒ ⟦Sb''⟧ₒ
+   | ra_umin Sb'     => Mn_compute ⟦Sb'⟧ₒ
+   end
+@@ -497,6 +499,8 @@ Extraction Inline sig_monotonic comp reify.
+ Extraction Inline umin₀_compute.
+ Extraction Inline Id_compute Zr_compute Sc_compute Pr_compute Mn_compute Cn_compute.
+ 
++Extract Inductive unit => "unit" [ "()" ].
++
+ Extract Inductive idx => "nat" [ "O" "S" ].
+ 
+ Extract Inductive vec => "list" [ "[]" "(::)" ].
 diff --git a/theories/umin_compute.v b/theories/umin_compute.v
 index 60b2a16..9996818 100644
 --- a/theories/umin_compute.v
