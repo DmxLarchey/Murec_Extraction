@@ -65,6 +65,23 @@ Section vec_basics.
 
   Arguments vec_O_inv {_}.
 
+  Let not0 n := match n with 0 => False | _ => True end.
+
+  Definition vh {n} (v : vec (S n)) : X :=
+    match v in vec n' return not0 n' -> X with
+    | ⟨⟩    => λ C, match C with end
+    | x ∷ _ => λ _, x
+    end I.
+
+  Definition vt {n} (v : vec (S n)) : vec n :=
+    match v in vec n' return not0 n' -> vec (pred n') with
+    | ⟨⟩    => λ C, match C with end
+    | _ ∷ v => λ _, v
+    end I.
+
+  Fact vht_ind n (P : vec (S n) → Type) v : P (vh v ∷ vt v) → P v.
+  Proof. now destruct (vec_inv v). Qed.
+
   Section vec_S_inv.
 
     (* See section vec_OS_inv_example below for
@@ -122,11 +139,15 @@ Section vec_basics.
                (HP0 : P ⟨⟩ ⟨⟩)
                (HPS : ∀ {n x y} {v w : vec n}, P v w → P (x∷v) (y∷w)).
 
-     Fixpoint vec_rect2 {n} (v : vec n) : ∀w, P v w :=
-       match v with
-       | ⟨⟩    => vec_O_inv HP0
-       | _ ∷ v => vec_S_inv (λ _ w, HPS (vec_rect2 v w))
-       end.
+     Fixpoint vec_rect2 {n} (v : vec n) { struct v } : ∀w, P v w.
+     Proof.
+       destruct n as [ | n ].
+       + apply vec_O_inv. 
+         revert v; now apply vec_O_inv.
+       + apply vht_ind with (v := v).
+         refine (vec_S_inv (λ y w, _)).
+         apply HPS, vec_rect2.
+     Qed.
 
   End vec_OS_inv_example.
 
